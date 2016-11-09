@@ -1,9 +1,19 @@
-### <span class="orange">Draft ECMA-262 (Ecma/TC39/2016/010)</span>
-### <span class="orange">7ᵗʰ Edition (第七版) / 2016.03.01</span>
+### <span style="color: #ff641c">Draft ECMA-262 (Ecma/TC39/2016/010)</span>
+### <span style="color: #ff641c">7ᵗʰ Edition (第七版) / 2016.03.01</span>
 
 # <span class="orange">ECMAScript® 2016 语言标准</span>
 
 ![MacDown logo](./ecma-logo.jpg)
+
+# 版权声明
+
+版权声明 © 2016 Ecma国际
+
+这份文档和它可能的翻译版可以被复制并配备到别处，且对它的评论或解释或协助它实现的衍生作品也可以被完整或部分且没有任何形式的限制地编著、复制、出版、传播。这么做的前提是将版权声明和本章节包含到所有这样的复制版和衍生作品中。尽管如此，这份文档本身不能被以任何形式修改，包括移除其版权声明或其对Ecma国际的引用部分都是不允许的，除非是Ecma国际以开发任何文档或是可交付内容为目的需要(在这种情况下必须保留版权声明)，又或是根据需求将其翻译到除英语之外的其它语言。
+
+本片翻译是 [Toxni](https://github.com/Toxni) 在业余时间翻译的，很多内容借用了  w3c 中文兴趣小组的 [这篇 ES5 中文译版](https://www.w3.org/html/ig/zh/wiki/ES5)。本翻译只做交流学习使用，遵守 [自由转载-非商用-非衍生-保持署名 (创意共享3.0许可证)](https://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh)。
+
+译者水平欠佳，错误之处必定很多，希望您能 [在这里](https://github.com/Toxni/es7/issues) 提出您的宝贵意见和建议，感激不尽。
 
 # 介绍
 本篇 Ecam 标准规定了 ECMAScript 2016 语言特性，它是 ECMAScript 语言的第七版。自 2017 年发布第一版开始，ECMAScript 已经成长为世界最广泛使用的通用编程语言之一。
@@ -66,6 +76,7 @@ ECMA-402, ECMAScript 2015 Internationalization API Specification.
 [http://www.ecma-international.org/publications/standards/Ecma-402.htm](http://www.ecma-international.org/publications/standards/Ecma-402.htm)
 
 ECMA-404, The JSON Data Interchange Format. 
+
 [http://www.ecma-international.org/publications/standards/Ecma-404.htm](http://www.ecma-international.org/publications/standards/Ecma-404.htm)
 
 # 4. 概述
@@ -269,7 +280,7 @@ ECMAScript 的严格变体通常被称为语言的 严格模式 (strict mode)。
 
 ### 4.3.25 符号值 (Symbol value)
 
-原始值，代表一些特殊的，字符串对象中没有的字符。
+原始值，代表一个独一无二的，非字符串对象的属性值。
 
 ### 4.3.26 符号类型 (Symbol type)
 
@@ -369,11 +380,132 @@ ECMAScript 的严格变体通常被称为语言的 严格模式 (strict mode)。
 
 事实上第 12 13 14 15 章给出的语法语法，并不能完全说明一个正确的 ECMAScript 程序能接受的 token 序列。一些额外的 token 序列也被接受，即某些特殊位置 (如行结束符前) 加入分号可以被文法接受。此外，文法描述的某些 token 序列不被文法接受，如一个行结束符出现在 “尴尬” 的位置。
 
+### 5.1.5 文法标记法
+
+词法、正则表达式文法、字符串数字文法，以及一些其它文法，每当这些文法的终结符被文本直接涉及到时，使用等宽字符来显示，它们都在文法产生式 Note.png 中，并且贯穿这份文档。他们表示程序书写正确。所有以这种方式指定的终结符，都可以理解为 Unicode 字符的完整的 ASCII 范围，不是任何其他乌焉成马的 Unicode 范围字符。
+
+非终结符以斜体显示。一个非终结符的定义由非终结符名称和其后定义的一个或多个冒号给出。(冒号的数量表示产生式所属的文法) 非终结符的右侧有一个或多个替代子紧跟在下一行。例如，句法定义：
+
+```js
+ WhileStatement :
+   while ( Expression ) Statement
+```
+
+表示这个非终结符 WhileStatement 代表 while Token，其后跟左括号 Token，其后跟 Expression，其后跟右括号 Token，其后跟 Statement。这里出现的 Expression 和 Statement 本身是非终结符。另一个例子，句法定义：
+
+```js
+ ArgumentList :
+   AssignmentExpression
+   ArgumentList , AssignmentExpression
+```
+
+表示这个 ArgumentList 可以代表一个 AssignmentExpression，或 ArgumentList，其后跟一个逗号，其后跟一个 AssignmentExpression。这个 ArgumentList 的定义是递归的，也就是说，它定义它自身。其结果是，一个 ArgumentList 可能包含用逗号隔开的任意正数个参数，每个参数表达式是一个 AssignmentExpression。这样，非终结符共用了递归的定义。
+
+终结符或非终结符可能会出现后缀下标 “opt”，表示它是可选符号。实际上包含可选符号的替代子包含两个右边部分，一个是省略可选元素的，另一个是包含可选元素的。这意味着：
+
+```js
+ VariableDeclaration :
+   Identifier Initialiser(opt)
+```
+是以下的一种缩写：
+
+```js
+ VariableDeclaration :
+   Identifier
+   Identifier Initialiser
+```
+并且：
+
+```js
+ IterationStatement :
+   for ( ExpressionNoIn(opt) ; Expression(opt) ; Expression(opt) ) Statement
+```
+是以下的一种缩写：
+
+```js
+ IterationStatement :
+   for ( ; Expression(opt) ; Expression(opt) ) Statement
+   for ( ExpressionNoIn ; Expression(opt) ; Expression(opt) ) Statement
+```
+是以下的一种缩写 :
+
+```js
+ IterationStatement :
+   for ( ; ; Expression(opt) ) Statement
+   for ( ; Expression ; Expression(opt) ) Statement
+   for ( ExpressionNoIn ; ; Expression(opt) ) Statement
+   for ( ExpressionNoIn ; Expression ; Expression(opt) ^) Statement
+```
+是以下的一种缩写：
+
+```js
+ IterationStatement :
+   for ( ; ; ) Statement
+   for ( ; ; Expression ) Statement
+   for ( ; Expression ; ) Statement
+   for ( ; Expression ; Expression ) Statement
+   for ( ExpressionNoIn ; ; ) Statement
+   for ( ExpressionNoIn ; ; Expression ) Statement
+   for ( ExpressionNoIn ; Expression ; ) Statement
+   for ( ExpressionNoIn ; Expression ; Expression ) Statement
+```
+因此，非终结 IterationStatement 实际上有 8 个右侧替代子。
+
+如果文法定义的冒号后面出现文字 “one of”，那么其后一行或多行出现的每个终结符都是一个选择定义。例如，ECMAScript 包含的词法生产器：
+
+```js
+ NonZeroDigit :: one of
+   1 2 3 4 5 6 7 8 9
+```
+
+这仅仅下面写法的一种缩写：
+
+```js
+ NonZeroDigit ::
+   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+```
+
+TODO
+
+## 5.2 TODO
+
+TODO
+
+## 5.3 TODO
+
+TODO
+
+# 6 ECMAScript 数据类型和值
+
+这个规范里处理的每个值都有一个关联的类型。可能的值和类型都将在本章中予以说明。类型将被进一步归入 ECMAScript 语言类型和特定类型。
+
+## 6.1 ECMAScript 语言类型
+
+ECMAScript 语言类型表示直接被程序员使用的几种类型，包括 Undefined、Null、Bollean、String、Symbol、Number 和 Object 这七种。ECMAScript 语言值就是符合这七种类型的值。
+
+### 6.1.1 未定义类型 (Undefined Type)
+
+未定义类型只有一个确定值，也就是 undefined 任何未声明的变量值都为 undefined。
+
+### 6.1.2 空类型 (Null Type)
+
+未定义类型只有一个确定值，也就是 null。
+
+### 6.1.3 布尔类型 (Boolean Type)
+
+未定义类型只有两个确定值，也就是逻辑上的 true 和 false。
 
 
+### 6.1.1 字符串类型 (String Type)
 
-<style>
-.orange {
-  color: #ff641c;
-}
-</style>
+字符串类型是所有有限的零个或多个16位无符号整数值 (“元素”) 的有序序列，其最大长度为 2^53 -1。在运行的 ECMAScript 程序中，字符串类型常被用于表示文本数据，此时字符串中的每个元素都被视为一个 UTF-16 代码单元。每个元素都被认为占有此序列中的一个位置，用非负整数索引这些位置。任何时候，第一个元素(若存在)在位置 0，下一个元素 (若存在) 在位置 1，依此类推。字符串的长度即其中元素 (即16位的值) 的个数。空字符串长度为零，因而不包含任何元素。
+
+若一个字符串包含实际的文本数据，每个元素都被认为是一个单独的 UTF-16 代码单元。无论这是不是 String 实际的存储格式，String 中的字符都被当作表示为 UTF-16 来计数。除非特别声明，作用在字符串上的所有操作都视它们为无差别的 16 位无符号整数；这些操作不保证结果字符串仍为正规形式，也不保证语言敏感结果。
