@@ -3,7 +3,7 @@
 
 # <span class="orange">ECMAScript® 2016 语言标准</span>
 
-![MacDown logo](./ecma-logo.jpg)
+![MacDown logo](./pictures/ecma-logo.jpg)
 
 # 版权声明
 
@@ -134,7 +134,7 @@ ECMAScript 不使用诸如 C++，Smalltalk，Java 中的类(class)。相反，�
 不直接包含原型中包含的特定属性的所有对象会共享此属性及属性值。图1 说明了这一点：
 
 
-![MacDown logo](./pic01.png)
+![MacDown logo](./pictures/pic01.png)
 
 
 
@@ -312,7 +312,7 @@ ECMAScript 的严格变体通常被称为语言的 严格模式 (strict mode)。
 
 是函数的属性值。
 
-*注意：当一个函数被叫做某对象的方法，该对象将作为 this 关键字传给该函数。
+*注意：当一个函数被叫做某对象的方法，该对象将作为 this 关键字传给该函数。*
 
 ### 4.3.32 内置方法 (built-in method)
 
@@ -504,8 +504,53 @@ ECMAScript 语言类型表示直接被程序员使用的几种类型，包括 Un
 未定义类型只有两个确定值，也就是逻辑上的 true 和 false。
 
 
-### 6.1.1 字符串类型 (String Type)
+### 6.1.4 字符串类型 (String Type)
 
 字符串类型是所有有限的零个或多个16位无符号整数值 (“元素”) 的有序序列，其最大长度为 2^53 -1。在运行的 ECMAScript 程序中，字符串类型常被用于表示文本数据，此时字符串中的每个元素都被视为一个 UTF-16 代码单元。每个元素都被认为占有此序列中的一个位置，用非负整数索引这些位置。任何时候，第一个元素(若存在)在位置 0，下一个元素 (若存在) 在位置 1，依此类推。字符串的长度即其中元素 (即16位的值) 的个数。空字符串长度为零，因而不包含任何元素。
 
-若一个字符串包含实际的文本数据，每个元素都被认为是一个单独的 UTF-16 代码单元。无论这是不是 String 实际的存储格式，String 中的字符都被当作表示为 UTF-16 来计数。除非特别声明，作用在字符串上的所有操作都视它们为无差别的 16 位无符号整数；这些操作不保证结果字符串仍为正规形式，也不保证语言敏感结果。
+若一个字符串包含实际的文本数据，每个元素都被认为是一个单独的 UTF-16 代码单元。然而 ECMAScript 并不设条件或是强制规定字符串值的代码单元序列，所以它们可能不是规范的 UTF-16 代码单元序列。无论这是不是 String 实际的存储格式，String 中的字符都被当作表示为 UTF-16 来计数。`String.prototype.normalize` 可以将字符串值标准化，`String.prototype.normalize` 会隐式地将字符串值标准化，除此之外，没有其它操作会将其隐式标准化。除非特别声明，作用在字符串上的所有操作都视它们为无差别的 16 位无符号整数；这些操作不保证结果字符串仍为正规形式，也不保证语言敏感结果。
+
+*注意：这些决议背后的原理是尽可能地保持字符串的实现简单而高效。因此，建议 ECMAScript 程序源代码若为正规形式 C，应保证字符串常量是正规化的 (如果保证源代码文本是正规化的话)，即便它们不包含任何 Unicode 转义序列。*
+
+有些操作会将字符串值当作 UTF-16 编码代码点，对此解释如下：
+
+* 在 0 到 0xD7FF 范围内的代码单元或在 0xE000 至 0xFFFF 内的代码单元会被解释为相同代码点。
+* 两个字符的字符串序列，前者 c1 在 0xD800 至 0xDBFF 范围内，后者 c2 在 0xDC00 至 0xDFFF范围内，这是一个代理对，它们代码点值为 (c1 - 0xD800) × 0x400 + (c2 - 0xDC00) + 0x10000。
+* 在  0xD800 至 0xDFFF 范围内，但又不是代理对，那么将它的代码点理解为同一个值。
+
+### 6.1.5 符号类型
+
+符号类型是一组非字符串类型的，可用于对象键名的特殊符号。
+
+每个符号类型值都是唯一的，不可变更的。
+
+每个符号类型都有一个不可改变的，相互独立的，被叫做 [[描述(Description)]] 的值，它只能是字符串或 undefined。
+
+#### 6.1.5.1 著名符号 (Well-Known Symbols)
+
+著名符号是本篇规范中描述的一些明确的内置符号。他们通常用作键的属性值。除非另行声明，著名符号可用在所有领域使用。
+
+本说明中，著名符号会以 @@name 形式表示，name 是下表中的某个值。
+
+ 规定名 | [[ 描述 (Description) ]] | 值和目的 |
+-------------------|------------------|--------------------|
+@@hasInstance | "Symbol.hasIntance" | 方法，判断对象是否为某构造器的示例，被 instanceof 操作调用。 |
+@@isConcatSpreadble | "Symbol.isConcatSpreadable" | 布尔值，若为 true 则表明该对象内部的数组应该用 `Array.prototype.concat` 合并起来。 |
+@@iterator | "Symbol. iterator" | 方法，返回一个对象的迭代器，被 for-of 语句调用。 |
+@@match | "Symbol.match" | 正则方法，在字符串中匹配正则表达式。被 `String.prototype.match` 调用。 |
+@@repalce | "Symbol.replace" | 正则方法，在字符串中替换匹配正则表达式的字符。被 `String.prototype.replace` 调用。 |
+@@search | "Symbol.search" | 正则方法，在字符串中返回匹配正则表达式的字符序号。被 `String.prototype.search` 调用。 |
+@@species | "Symbol.species" |  值为函数的属性，用于创建导出对象的构造器函数。 |
+@@split | "Symbol.split" | 正则方法，在字符串中分割正则表达式匹配的字符。被 `String.prototype.split` 调用。 |
+@@toPrimitive | "Symbol.toPrimitive" | 方法，将一个对象转换为对应的原始值，被 [ToPrimitive]() 概念调用。  |
+@@toStringTag | "Symbol.toStringTag" | 值为字符串的属性，用以创建一个对象的默认字符串描述，被内置方法 Object.prototype.toString 调用。 |
+@@unscopable | "Symbol.unscopable" | 值为对象的属性，该对象自身的以及继承的属性名就是同其绑定的相关对象的属性名，除 with 语句条件以外。 |
+
+### 6.1.6 数值类型
+
+TODO
+
+### 6.1.7 对象类型
+
+TODO
+
