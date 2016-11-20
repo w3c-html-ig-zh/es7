@@ -382,6 +382,8 @@ ECMAScript 的严格变体通常被称为语言的 严格模式 (strict mode)。
 
 ### 5.1.5 文法标记法
 
+TODO: Change some differences
+
 词法、正则表达式文法、字符串数字文法，以及一些其它文法，每当这些文法的终结符被文本直接涉及到时，使用等宽字符来显示，它们都在文法产生式 Note.png 中，并且贯穿这份文档。他们表示程序书写正确。所有以这种方式指定的终结符，都可以理解为 Unicode 字符的完整的 ASCII 范围，不是任何其他乌焉成马的 Unicode 范围字符。
 
 非终结符以斜体显示。一个非终结符的定义由非终结符名称和其后定义的一个或多个冒号给出。(冒号的数量表示产生式所属的文法) 非终结符的右侧有一个或多个替代子紧跟在下一行。例如，句法定义：
@@ -578,6 +580,7 @@ ECMAScript 语言类型表示直接被程序员使用的几种类型，包括 Un
 
 如果一个有限的数值非零且用来表达它 (上文两种形式之一) 的整数 m 是奇数，则该数值有 奇数标记。否则，它有 偶数标记。
 
+
 在本规范中，当 x 表示一个精确的非零实数数学量 (甚至可以是无理数，比如 π) 时，短语 "x 的 Number 值" 意为，以下面的方式选择一个 Number 值。考虑数值类型的所有有限值的集合 (不包括 -0 和两个被加入在数值类型中但不可呈现的值，即 21024 (+1 × 2^53 × 2971) 和 -21024 (-1 × 2^53 × 2971)。选择此集合 中值最接近 x 的一员，若集合中的两值近似相等，那么选择有偶数标记的那个；为此，21024 和 -21024 这两个超额值被认为有偶数标记。最终，若选择 21024 ，用 +∞ 替换它；若选择 -21024 ，用 -∞ 替换它；若选择 +0，有且只有 x 小于零时，用 -0 替换它；其它任何被选取的值都不用改变。结果就是 x 的 Number 值。(此过程正是 IEEE-754 的四舍五入模式对应的行为。)
 
 某些 ECMAScript 运算符仅涉及闭区间 -2^31 到 2^31 - 1 的整数，或闭区间 0 到 2^32 - 1。这些运算符接受任何数值类型的值，不过，数值首先被转换为 232 个整数值中的一个。参见 (7.1 章)[] 中的数值转换描述。
@@ -586,4 +589,124 @@ ECMAScript 语言类型表示直接被程序员使用的几种类型，包括 Un
 
 本规范中的特性用于定义和解释命名属性的状态。命名的数据属性由一个名字关联到一个下表中列出的特性。
 
+TODO
+
+TODO
+
+TODO
+
+TODO
+
+
+
+# 19 基本对象
+
+## 19.1 对象对象
+
+### 19.1.1 对象构造器
+
+对象构造器是固有对象 %Object% 的初始值，它是全局对象的一个属性。当它作为构造器被调用的时候可以产生一个新的普通对象。当它作为函数而不是构造器被调用的时候，它会执行类型转换。
+
+对象构造器被设计为可子类化的，当定义类的时侯，它可以作为 extends 语句的值。
+
+#### 19.1.1.1 Object([value])
+
+当 Object 被当作函数调用，且包含可选参数参数 [value]，那么执行以下步骤：
+
+1. 如果 NewTarget 非空也非有效函数，那么返回  OrdinaryCreateFromConstructor(NewTarget, "%ObjectPrototype%") 的值。
+
+2. 如果 [value] 为 null, undefined 或者为未提供的值，那么返回 ?ObjectCreate(%ObjectPrototype%) 的值。
+
+3. 返回 ToObject(value) 的值。
+
+
+### 19.1.2 对象构造器的属性 
+
+对象构造器的内部固有属性 [[Prototype]] 的值为标准对象 %FunctionPrototype%。 
+
+除了 length 属性以外，对象构造器还有以下属性：
+
+#### 19.1.2.1 Object.assign ( target, ...sources )
+
+assign 方法可以复制原对象中的所有可枚举属性到新的对象中去，当 assign 方法调用时，执行以下步骤：
+
+1. Let to be ? ToObject(target).
+2. If only one argument was passed, return to.
+3. Let sources be the List of argument values starting with the second argument.
+4. For each element nextSource of sources, in ascending index order,
+	1. If nextSource is undefined or null, let keys be a new empty List.
+	2. Else,
+		i. Let from be ToObject(nextSource).
+		ii. Let keys be ? from.[[OwnPropertyKeys]]().
+	3. Repeat for each element nextKey of keys in List order,
+		i. Let desc be ? from.[[GetOwnProperty]](nextKey).
+		ii. If desc is not undefined and desc.[[Enumerable]] is true, then
+		1. Let propValue be ? Get(from, nextKey).
+		2. Perform ? Set(to, nextKey, propValue, true).
+5. Return to.
+
+assign 的 length 属性为 2。
+
+#### 19.1.2.2 Object.create ( target, ...sources )
+
+create 方法创建一个包含特定原型属性的全新对象，create 方法调用时，执行以下步骤：
+
+1. If Type(O) is neither Object nor Null, throw a TypeError exception.
+2. Let obj be ObjectCreate(O).
+3. If Properties is not undefined, then
+	1. Return ? ObjectDefineProperties(obj, Properties).
+4. Return obj.
+
+#### 19.1.2.3 Object.defineProperties ( O, Properties )
+
+defineProperties 函数用于给对象添加新的属性或者更新已存在的属性。当 defineProperties 方法调用的时候，执行以下步骤：
+
+1. Return ? ObjectDefineProperties(O, Properties).
+
+##### 19.1.2.3.1 运行中语义 ObjectDefineProperties ( O, Properties )
+
+有 O 和 Properties 两个参数的抽象方法 ObjectDefineProperties 调用时，执行以下步骤：
+
+1. If Type(O) is not Object, throw a TypeError exception.
+2. Let props be ? ToObject(Properties).
+3. Let keys be ? props.[[OwnPropertyKeys]]().
+4. Let descriptors be a new empty List.
+5. Repeat for each element nextKey of keys in List order,
+	1. Let propDesc be ? props.[[GetOwnProperty]](nextKey).
+	2. If propDesc is not undefined and propDesc.[[Enumerable]] is true, then
+		1. Let descObj be ? Get(props, nextKey).
+		2. Let desc be ? ToPropertyDescriptor(descObj).
+		3. Append the pair (a two element List) consisting of nextKey and desc to the end of descriptors.
+6. For each pair from descriptors in list order,
+	1. Let P be the first element of pair.
+	2. Let desc be the second element of pair.
+	3. Perform ? DefinePropertyOrThrow(O, P, desc).
+7. Return O.
+
+#### 19.1.2.4 Object.defineProperty ( O, P, Attributes )
+
+defineProperties 函数用于给对象添加一个新的属性或者更新一个已存在的属性。当 defineProperties 方法调用的时候，执行以下步骤：
+
+1. If Type(O) is not Object, throw a TypeError exception.
+2. Let key be ? ToPropertyKey(P).
+3. Let desc be ? ToPropertyDescriptor(Attributes).
+4. Perform ? DefinePropertyOrThrow(O, key, desc).
+5. Return O.
+
+#### 19.1.2.5 Object.freeze ( O )
+
+freeze 方法调用时，执行以下步骤：
+
+1. If Type(O) is not Object, return O.
+2. Let status be ? SetIntegrityLevel(O, "frozen").
+3. If status is false, throw a TypeError exception.
+4. Return O.
+
+#### 19.1.2.6 Object.getOwnPropertyDescriptor ( O, P )
+getOwnPropertyDescriptor 方法调用时，执行以下步骤：
+
+1. Let obj be ? ToObject(O).
+2. Let key be ? ToPropertyKey(P).
+3. Let desc be ? obj.[[GetOwnProperty]]&nbsp;(key).
+4. Return FromPropertyDescriptor(desc).
 
