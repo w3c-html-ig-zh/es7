@@ -637,9 +637,9 @@ assign 方法可以复制原对象中的所有可枚举属性到新的对象中�
 	1. If nextSource is undefined or null, let keys be a new empty List.
 	2. Else,
 		i. Let from be ToObject(nextSource).
-		ii. Let keys be ? from.[[OwnPropertyKeys]]().
+		ii. Let keys be ? from.[[OwnPropertyKeys]]&nbsp;().
 	3. Repeat for each element nextKey of keys in List order,
-		i. Let desc be ? from.[[GetOwnProperty]](nextKey).
+		i. Let desc be ? from.[[GetOwnProperty]]&nbsp;(nextKey).
 		ii. If desc is not undefined and desc.[[Enumerable]] is true, then
 		1. Let propValue be ? Get(from, nextKey).
 		2. Perform ? Set(to, nextKey, propValue, true).
@@ -663,16 +663,16 @@ defineProperties 函数用于给对象添加新的属性或者更新已存在的
 
 1. Return ? ObjectDefineProperties(O, Properties).
 
-##### 19.1.2.3.1 运行中语义 ObjectDefineProperties ( O, Properties )
+##### 19.1.2.3.1 执行中语义 ObjectDefineProperties ( O, Properties )
 
 有 O 和 Properties 两个参数的抽象方法 ObjectDefineProperties 调用时，执行以下步骤：
 
 1. If Type(O) is not Object, throw a TypeError exception.
 2. Let props be ? ToObject(Properties).
-3. Let keys be ? props.[[OwnPropertyKeys]]().
+3. Let keys be ? props.[[OwnPropertyKeys]]&nbsp;().
 4. Let descriptors be a new empty List.
 5. Repeat for each element nextKey of keys in List order,
-	1. Let propDesc be ? props.[[GetOwnProperty]](nextKey).
+	1. Let propDesc be ? props.[[GetOwnProperty]]&nbsp;(nextKey).
 	2. If propDesc is not undefined and propDesc.[[Enumerable]] is true, then
 		1. Let descObj be ? Get(props, nextKey).
 		2. Let desc be ? ToPropertyDescriptor(descObj).
@@ -709,4 +709,186 @@ getOwnPropertyDescriptor 方法调用时，执行以下步骤：
 2. Let key be ? ToPropertyKey(P).
 3. Let desc be ? obj.[[GetOwnProperty]]&nbsp;(key).
 4. Return FromPropertyDescriptor(desc).
+
+#### 19.1.2.7 Object.getOwnPropertyNames ( O )
+getOwnPropertyNames 方法调用时，执行以下步骤
+1. Return ? GetOwnPropertyKeys(O, String).
+
+#### 19.1.2.8 Object.getOwnPropertySymbols ( O )
+getOwnPropertySymbols 方法调用且有参数 O 时，执行以下步骤：
+
+1. Return ? GetOwnPropertyKeys(O, Symbol).
+
+##### 19.1.2.8.1 执行中语义: GetOwnPropertyKeys ( O, Type )
+抽象方法 GetOwnPropertyKeys 被调用，且参数为对象类型的 O 和字符串或是符号类型的 Type 时，执行以下步骤：
+
+1. Let obj be ? ToObject(O).
+2. Let keys be ? obj.[[OwnPropertyKeys]]&nbsp;().
+3. Let nameList be a new empty List.
+4. Repeat for each element nextKey of keys in List order,
+	1. If Type(nextKey) is Type, then
+		1. Append nextKey as the last element of nameList.
+5. Return CreateArrayFromList(nameList).
+
+#### 19.1.2.9 Object.getPrototypeOf ( O )
+getPrototypeOf 方法调用且有参数 O 时，执行以下步骤：
+
+1. Let obj be ? ToObject(O).
+2. Return ? obj.[[GetPrototypeOf]]&nbsp;().
+
+#### 19.1.2.10 Object.is ( value1, value2 )
+is 方法调用且有参数 value1 和 value2 时，执行以下步骤：
+
+1. Return SameValue(value1, value2).
+
+#### 19.1.2.11 Object.isExtensible ( O )
+isExtensibl 方法调用且有参数 O 时，执行以下步骤：
+
+1. If Type(O) is not Object, return false.
+2. Return ? IsExtensible(O).
+
+#### 19.1.2.12 Object.isFrozen ( O )
+isFrozen 方法调用且有参数 O 时，执行以下步骤：
+
+1. If Type(O) is not Object, return true.
+2. Return ? TestIntegrityLevel(O, "frozen").
+
+#### 19.1.2.13 Object.isSealed ( O )
+isSealed 方法调用且有参数 O 时，执行以下步骤：
+
+1. If Type(O) is not Object, return true.
+2. Return ? TestIntegrityLevel(O, "sealed").
+
+#### 19.1.2.14 Object.keys ( O )
+keys 方法调用且有参数 O 时，执行以下步骤：
+
+1. Let obj be ? ToObject(O).
+2. Let nameList be ? EnumerableOwnNames(obj).
+3. Return CreateArrayFromList(nameList).
+
+If an implementation defines a specific order of enumeration for the for-in statement, the same order must be used for the elements of the array returned in step 3.
+
+#### 19.1.2.15 Object.preventExtensions ( O )
+preventExtensions 方法调用时，执行以下步骤：
+1. If Type(O) is not Object, return O.
+2. Let status be ? O.[[PreventExtensions]]&nbsp;().
+3. If status is false, throw a TypeError exception.
+4. Return O.
+
+#### 19.1.2.16 Object.prototype
+Object.prototype 的初始值是内置对象 %ObjectPrototype%.
+
+该原型的特性如下 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }.
+
+#### 19.1.2.17 Object.seal ( O )
+seal 方法调用时，执行以下步骤：
+
+1. If Type(O) is not Object, return O.
+2. Let status be ? SetIntegrityLevel(O, "sealed").
+3. If status is false, throw a TypeError exception.
+4. Return O.
+
+#### 19.1.2.18 Object.setPrototypeOf ( O, proto )
+When the setPrototypeOf 方法调用且有参数 O 和 proto 时，执行以下步骤：
+
+1. Let O be ? RequireObjectCoercible(O).
+2. If Type(proto) is neither Object nor Null, throw a TypeError  exception.
+3. If Type(O) is not Object, return O.
+4. Let status be ? O.[[SetPrototypeOf]]&nbsp;(proto).
+5. If status is false, throw a TypeError exception.
+6. Return O.
+
+### 19.1.3 标准对象的原型属性
+
+标准对象的原型是 %ObjectPrototype% 固有对象，它是一个不可变更的异常对象。它的 [[prototype]] 为 null 且初始的 [[Extensible]] 内置值为 true。
+
+#### 19.1.3.1 Object.prototype.constructor
+Object.prototype.constructor 也就是内置对象 %Object%。
+
+#### 19.1.3.2 Object.prototype.hasOwnProperty ( V )
+hasOwnProperty 方法调用且有参数 V 时，执行以下步骤：
+
+1. Let P be ? ToPropertyKey(V).
+2. Let O be ? ToObject(this value).
+3. Return ? HasOwnProperty(O, P).
+
+* 注意，步骤 1 2 的顺序是为了确保任何步骤 1 抛出的异常情况都不影响步骤执行，比如说 this 值为 undefined 或 null，兼容了以前版本中的内容。
+
+#### 19.1.3.3 Object.prototype.isPrototypeOf ( V )
+isPrototypeOf 方法调用且有参数 V 时，执行以下步骤：
+
+1. If Type(V) is not Object, return false.
+2. Let O be ? ToObject(this value).
+3. Repeat
+	1. Let V be ? V.[[GetPrototypeOf]]&nbsp;().
+	2. If V is null, return false.
+	3. If SameValue(O, V) is true, return true.
+
+* 注意，步骤 1 2 的顺序是为了保证即使 V 不是对象且其 this 值为 undefined or null，步骤也可以照常运行，兼容了以前版本规范中的内容。
+
+#### 19.1.3.4 Object.prototype.propertyIsEnumerable ( V )
+propertyIsEnumerable 方法调用且有参数 V 时，执行以下步骤：
+
+1. Let P be ? ToPropertyKey(V).
+2. Let O be ? ToObject(this value).
+3. Let desc be ? O.[[GetOwnProperty]]&nbsp;(P).
+4. If desc is undefined, return false.
+5. Return the value of desc.[[Enumerable]].
+
+* 注意，本方法不考虑原型链。
+
+* 注意，步骤 1 2 的顺序是为了确保任何步骤 1 抛出的异常情况都不影响步骤执行，比如说 this 值为 undefined 或 null，兼容了以前版本中的内容。
+
+#### 19.1.3.5 Object.prototype.toLocaleString ( [ reserved1 [ , reserved2 ] ] )
+toLocaleString 方法调用时，执行以下步骤：
+
+1. Let O be the this value.
+2. Return ? Invoke(O, "toString").
+
+可选参数暂时未使用，打算用它来与 ECMA-402 中的 toLocalString 保持一致。本特性的实现若不依赖 ECMA-402 的支持，就不得使用这些可选参数作为其他用途。
+
+The optional parameters to this function are not used but are intended to correspond to the parameter pattern used by ECMA-402 toLocalString functions. Implementations that do not include ECMA-402 support must not use those parameter positions for other purposes.
+
+* 注意，本方法提供一个个通用的 toLocaleString 实现，用以给 toString 添加本地化行为。Array Number Date 和  Typed Arrays 会提供它们自己的一些 toLocaleString 方法。
+
+* 注意，ECMA-402 有意不为本规范的实现提供可选项。
+
+#### 19.1.3.6Object.prototype.toString ( )
+
+toString 方法调用时，执行以下步骤：
+
+1. If the this value is undefined, return "[object Undefined]".
+2. If the this value is null, return "[object Null]".
+3. Let O be ToObject(this value).
+4. Let isArray be ? IsArray(O).
+5. If isArray is true, let builtinTag be "Array".
+6. Else, if O is an exotic String object, let builtinTag be "String".
+7. Else, if O has an [[ParameterMap]] internal slot, let builtinTag be "Arguments".
+8. Else, if O has a [[Call]] internal method, let builtinTag be "Function".
+9. Else, if O has an [[ErrorData]] internal slot, let builtinTag be "Error".
+10. Else, if O has a [[BooleanData]] internal slot, let builtinTag be "Boolean".
+11. Else, if O has a [[NumberData]] internal slot, let builtinTag be "Number".
+12. Else, if O has a [[DateValue]] internal slot, let builtinTag be "Date".
+13. Else, if O has a [[RegExpMatcher]] internal slot, let builtinTag be "RegExp".
+14. Else, let builtinTag be "Object".
+15. Let tag be ? Get(O, @@toStringTag).
+16. If Type(tag) is not String, let tag be builtinTag.
+17. Return the String that is the result of concatenating "[object ", tag, and "]".
+
+该方法是 %ObjProto_toString% 固有对象。
+
+* 注意，在之前的版本中，该方法有时会用来访问 [[class]] 内部特性的字符串值。在有些内置对象中，有时它只是形如虚设。上面的定义保留了用 toString 来测试一些特定的内置对象。它并不提供一个可靠的测试特定对象的方法，所以它不能测试其它的内置对象抑或是程序生成的对象的类型。除此之外，程序可以利用 @@toStringTag 使得测试特定内置对象的类型无效。
+
+#### 19.1.3.7 Object.prototype.valueOf ( )
+
+valueOf 方法调用时，执行以下步骤：
+
+1. Return ? ToObject(this value).
+
+该方法是 %ObjProto_valueOf% 固有对象。
+
+### 19.1.4 对象实例的属性
+
+除了对象原型外，对象实例不包含任何特定属性。
+
 
