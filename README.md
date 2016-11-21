@@ -11,9 +11,11 @@
 
 这份文档和它可能的翻译版可以被复制并配备到别处，且对它的评论或解释或协助它实现的衍生作品也可以被完整或部分且没有任何形式的限制地编著、复制、出版、传播。这么做的前提是将版权声明和本章节包含到所有这样的复制版和衍生作品中。尽管如此，这份文档本身不能被以任何形式修改，包括移除其版权声明或其对Ecma国际的引用部分都是不允许的，除非是Ecma国际以开发任何文档或是可交付内容为目的需要(在这种情况下必须保留版权声明)，又或是根据需求将其翻译到除英语之外的其它语言。
 
-本片翻译是 [Toxni](https://github.com/Toxni) 在业余时间翻译的，很多内容借用了  w3c 中文兴趣小组的 [这篇 ES5 中文译版](https://www.w3.org/html/ig/zh/wiki/ES5)。本翻译只做交流学习使用，遵守 [自由转载-非商用-非衍生-保持署名 (创意共享3.0许可证)](https://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh)。
+本篇翻译内容是 [Toxni](https://github.com/Toxni) 在业余时间翻译整理的，很多内容借用了  w3c 中文兴趣小组的 [这篇 ES5 中文译版](https://www.w3.org/html/ig/zh/wiki/ES5)，第 20 章的内容是 [众成翻译](http://zcfy.cc/article/ecma-262-7-edition-1401.html) 的 [QAQMiao](http://zcfy.cc/@QAQMiao) 同学翻译的。本翻译只做交流学习使用，遵守 [自由转载-非商用-非衍生-保持署名 (创意共享3.0许可证)](https://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh)。
 
-译者水平欠佳，错误之处必定很多，希望您能 [在这里](https://github.com/Toxni/es7/issues) 提出您的宝贵意见和建议，感激不尽。
+
+
+译者水平欠佳，错误之处必定很多，希望您能 [在这里](https://github.com/Toxni/es7/issues) 提出您的宝贵意见和建议，感激不尽。 
 
 # 介绍
 本篇 Ecam 标准规定了 ECMAScript 2016 语言特性，它是 ECMAScript 语言的第七版。自 2017 年发布第一版开始，ECMAScript 已经成长为世界最广泛使用的通用编程语言之一。
@@ -39,13 +41,9 @@ ECMAScript 第六版标准于 2009 年开始制定，此时也正是第五版标
 
 许多个人及团体都对 Ecma TC39 团队年度更新本标准作出了贡献。现在已经形成了一个充满活力的社区，大家一起测试标准、报告 bug、提出可行建议、并向全世界的 ECMAScript 开发者提供教程。但是很可惜我们不可能在这里列出作出贡献的每个团体、每个人的名字。
 
-Allen Wirfs-Brock
+Allen Wirfs-Brock - ECMA-262 第六版本编辑者
 
-ECMA-262 第六版本编辑者
-
-Brian Terlson
-
-ECMA-262 第七版本编辑者
+Brian Terlson - ECMA-262 第七版本编辑者
 
 # 1. 范围
 
@@ -300,7 +298,7 @@ ECMAScript 的严格变体通常被称为语言的 严格模式 (strict mode)。
 
 是函数的内置对象。
 
-*注意：内置函数包含例如 parseInt 和 Math.exp 这样的函数。标准的实现可能包含本标准中未包含的额外的内置函数。
+*注意：内置函数包含例如 parseInt 和 Math.exp 这样的函数。标准的实现可能包含本标准中未包含的额外的内置函数。*
 
 ### 4.3.30 属性 (property)
 
@@ -891,4 +889,1759 @@ valueOf 方法调用时，执行以下步骤：
 
 除了对象原型外，对象实例不包含任何特定属性。
 
+
+
+# ECMA-262 7ᵗʰ Edition 第 20 章
+
+> 本文转载自：[众成翻译](http://www.zcfy.cc)
+> 译者：[QAQMiao](http://www.zcfy.cc/@QAQMiao)
+> 链接：[http://www.zcfy.cc/article/1401](http://www.zcfy.cc/article/1401)
+> 原文：[http://www.ecma-international.org/ecma-262/7.0/#sec-numbers-and-dates](http://www.ecma-international.org/ecma-262/7.0/#sec-numbers-and-dates)
+
+# 20 Number 和 Date
+---
+## 20.1 Number 对象
+
+### 20.1.1 Number 构造函数
+
+Number 构造函数是 %Number% 的内部对象也是[全局对象](http://www.ecma-international.org/ecma-262/7.0/#global-object)中 `Number` 属性的初始值。当作为构造函数被调用时，它会创建并初始化一个新的 Number 对象。当作为函数被调用时，它会执行类型转换。
+
+`Number` 构造函数被设计成可继承的，可以将其复制给继承类。想要继承 `Number` 行为的子类构造函数为了创建和初始化带有内置 [[NumberData]] 的子类实例中必须包含一个 `super` 调用 `Number` 构造函数。
+
+#### 20.1.1.1 Number( <var>value</var> )
+
+当调用 `Number` 传递了一个 *number* 参数时，会执行以下步骤：
+
+1. 如果函数调用没有传参，则设置 n 为 +0。
+2. 否则令 n 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/#sec-tonumber)(*value*)。
+3. 如果结果为 undefined，返回 n。
+4. 初始化 O = [OrdinaryCreateFromConstructor](http://www.ecma-international.org/ecma-262/7.0/#sec-ordinarycreatefromconstructor)(n, `"%NumberPrototype%"`, « [[NumberData]] »)。
+5. 设置 O 的内置 [[NumberData]] 的值为 n。
+6. 返回 O。
+
+### 20.1.2 Number构造函数的属性
+
+Number 构造函数的内部 [[Prototype]] 的值为内部对象 [%FunctionPrototype%](http://www.ecma-international.org/ecma-262/7.0/#sec-properties-of-the-function-prototype-object)。
+
+Number 构造函数有以下属性：
+
+#### 20.1.2.1 Number.EPSILON
+
+Number.EPSILON 表示的是比 1 大的最小的数与 1 的差的数值，大约为 2.2204460492503130808472633361816 x 10<sup>-16</sup>。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]:false, [[Configurable]]:false }。
+
+#### 20.1.2.2 Number.isFinite ( <var>number</var> )
+
+当调用 `Number.isFinite` 传递了一个 *number* 参数时，会执行以下步骤：
+
+1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-data-types-and-values)(number) 的结果不是 Number 类型，返回 false。
+2. 如果 number 的值为 NaN，+∞，或是 -∞，返回 false。
+3. 其他情况返回 true。
+
+#### 20.1.2.3 Number.isInteger ( <var>number</var> )
+
+当调用 `Number.isFinite` 传递了一个 *number* 参数时，会执行以下步骤：
+
+1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-data-types-and-values)(number) 的结果不是 Number 类型，返回 false。
+2. 如果 number 的值为 NaN，+∞，或是 -∞，返回 false。
+3. 初始化 integer 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger)(number)。
+4. 如果 integer 不等于 number，返回 false。
+5. 其他情况返回 true。
+
+#### 20.1.2.4 Number.isNaN ( <var>number</var> )
+
+当调用 `Number.isNaN` 传递了一个 *number* 参数时，会执行以下步骤：
+
+1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-data-types-and-values)(number) 的结果不是 Number 类型，返回 false。
+2. 如果 number 的值为 NaN，返回 true。
+3. 其他情况返回 false。
+
+注
+这个函数与全局函数 isNaN [18.2.3](http://www.ecma-international.org/ecma-262/7.0/#sec-isnan-number) 是不同的。isNaN 在确定当前参数是否是 NaN 之前不会对其进行转换。
+
+#### 20.1.2.5 Number.isSafeInteger ( <var>number</var> )
+
+当调用 `Number.isSafeInteger` 传递了一个 *number* 参数时，会执行以下步骤：
+
+1.  如果 [Type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-data-types-and-values)(number) 的结果不是 Number 类型，返回 false。
+2. 如果 number 的值为 NaN，+∞，或是 -∞，返回 false。
+3. 初始化 integer 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger)(number)。
+4. 如果 integer 不等于 number，返回 false。
+5. 如果 [abs](http://www.ecma-international.org/ecma-262/7.0/#sec-algorithm-conventions)(integer) ≤ 2<sup>53</sup> - 1，返回 true。
+6. 其他情况返回 false。
+
+#### 20.1.2.6 Number.MAX_SAFE_INTEGER
+
+注
+`Number.MAX_SAFE_INTEGER` 的值是 Number 类型最大值 - 1。
+
+Number.MAX_SAFE_INTEGER 的值等于 9007199254740991 (2<sup>53</sup> - 1)。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.7 Number.MAX_VALUE
+
+`Number.MAX_VALUE` 的值代表最大的正数，约为 1.7976931348623157 × 10<sup>308</sup>。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.8 Number.MIN_SAFE_INTEGER
+
+注
+`Number.MIN_SAFE_INTEGER` 的值是 Number 类型最小值 + 1。
+
+Number.MIN_SAFE_INTEGER 的值等于 -9007199254740991 (-(2<sup>53</sup>-1))。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.9 Number.MIN_VALUE
+
+`Number.MIN_VALUE` 代表最小的正数，约为5 × 10<sup>-324</sup>。
+
+在 IEEE 754-2008 双精度二进制表示法中，最小的可取值为非规格化数。如果一个实现中不支持非规格化值，那 `Number.MIN_VALUE` 的值应为最小的非零正数，实际以实现为准。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.10 Number.NaN
+
+`Number.NaN` 的值为 NaN。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.11 Number.NEGATIVE_INFINITY
+
+Number.NEGATIVE_INFINITY 的值为 -∞。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.12 Number.parseFloat ( <var>string</var> )
+
+`Number.parseFloat` 数据属性的值与[全局对象](http://www.ecma-international.org/ecma-262/7.0/index.html#global-object)的内置函数 `parseFloat` 属性的值是相同的，其定义位于 18.2.4。
+
+#### 20.1.2.13 Number.parseInt ( <var>string</var>, <var>radix</var> )
+
+`Number.parseInt` 数据属性的值与[全局对象](http://www.ecma-international.org/ecma-262/7.0/index.html#global-object)的内置函数 `parseInt` 属性的值是相同的，其定义位于 18.2.5。
+
+#### 20.1.2.14 Number.POSITIVE_INFINITY
+
+Number.POSITIVE_INFINITY 的值为 +∞。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.1.2.15 Number.prototype
+
+`Number.prototype` 的初始值为内部对象 [%NumberPrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-number-prototype-object)
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+### 20.1.3 Number 原型对象的属性
+
+Number 原型对象就是内部对象 %NumberPrototype%。Number 原型对象是一个普通对象。Number 原型本身是一个 Number 对象；它有一个值为 +0 的内置 [[NumberData]]。
+
+Number 原型对象的内置 [[Prototype]] 的值为内部对象 [%ObjectPrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-object-prototype-object)。
+
+除非另有明确说明，以下定义的 Number 原型对象均为非通用的，传递给它们的 this 值必须为一个 Number 值或者一个内置 [[NumberData]] 已经初始化为 Number 值的对象。
+
+抽象操作 thisNumberValue(value) 执行以下步骤：
+
+1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(value) 为 Number，返回 value。
+2. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(value) 为对象，并且 value 有内置 [[NumberData]]，则
+    1. 断言： value 的内置 [[NumberData]] 是 Number 类型值。
+    2. 返回： value 的内置 [[NumberData]]。
+3. 抛出 TypeError 异常。
+
+
+在规范的方法中，短语 "this Number value"指的是通过将 this 的值作为参数传递来调用抽象操作 thisNumberValue 返回相应的值。
+
+#### 20.1.3.1 Number.prototype.constructor
+
+`Number.prototype.constructor` 的初始值为内部对象 [%Number%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-number-constructor)。
+
+#### 20.1.3.2 Number.prototype.toExponential ( <var>fractionDigits</var> )
+
+返回一个科学计数法表示的代表 this 数字值的字符串，它的有效数字的小数点前有一个数字，有效数字的小数点后有 fractionDigits 个数字。如果 fractionDigits 是 undefined，包括指定唯一数字值需要的尽可能多的有效数字（就像 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring)，但在这里总是以科学计数法输出）。具体来说执行以下步骤：
+
+1. 令 x 等于 thisNumberValue(this value)。
+2. 令 f 等于 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(fractionDigits)。
+3. 断言： 当 fractionDigits 为 undefined 时，f 为 0。
+4. 如果 x 是 NaN, 返回字符串 `"NaN"`。
+5. 令 s 为空字符串。
+6. 如果 x < 0,则
+    1. 令 s 为 `"-"`。
+    2. 令 x 为 -x。
+7. 如果 x = +∞，则
+    1. 返回拼接字符串 s 和 "Infinity" 后的结果。
+8. 如果 f < 0 或者 f > 20，抛出一个 RangeError 的异常。然而实现被允许扩展 `toExponential` 对于 f 的值小于0或者大于20时的行为。在这种情况下，`toExponential` 不再必须抛出 RangeError 的异常。
+9. 如果 x = 0，则
+    1. 令 m 为由 f + 1 个码元 0x0030（数字0）所组成的字符串。
+    2. 令 e 等于 0。
+10. 如果 x ≠ 0，
+    1. 如果 fractionDigits 不是 undefined，则
+        1. 令 e 和 n 为整数，使得满足 10<sup>f</sup> ≤ n < 10<sup>f+1</sup> 且 n × 10<sup>e–f</sup> – x 的准确数值尽可能接近零。如果 e 和 n 有两个这样的组合，选择使 n × 10<sup>e–f</sup> 更大的组合。
+    2. 如果  fractionDigits 是 undefined
+        1. 令 e, n, 和 f 为整数，使得满足 f ≥ 0 且 10<sup>f</sup>≤ n < 10<sup>f+1</sup>, n × 10<sup>e–f</sup> 的数值等于 x, 且 f 的值尽可能小。需要注意的是，n 的十进制表示有 f + 1 个数字，n 不能被 10 整除，并且 n 的最少有效位数未必由这些条件唯一确定。
+    3. 令 m 等于 n 的十进制表示的字符串（没有前导零）。
+11.  如果 f ≠ 0，则
+    1. 另 a 为 m 中的第一个元素，b 为 m 中剩下的 f 个元素。
+    2. 令 m 等于 a，`"."`，b 三个字符串的拼接。
+12. 如果 e = 0，则
+    1. 令 c = `"+"`。
+    2. 令 d = `"0"`。
+13. 否则，
+    1. 如果 e > 0，令 c 等于 `"+"`。
+    2. 如果 e ≤ 0，
+        1.  令 c 等于 `"-"`。
+        2.  令 e 等于 -e。
+    3. 令 d 等于 e 的十进制表示的字符串（没有前导零）。
+14. 令 m 等于 m，`"e"`，c，d 四个字符串的拼接。
+
+如果调用 `toExponential` 方法时多于一个参数，则该行为未定义（详见规范[17](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-standard-built-in-objects)）。
+
+注
+对于需要提供比上述规则更准确转换的实现，建议用以下算法作为指引替代步骤 10.2.1：
+
+1. 令 e, n, 和 f 为整数，使得满足 f ≥ 0, 10<sup>f</sup>≤ n < 10<sup>f+1</sup>, n × 10<sup>e–f</sup> 的数值等于 x，且 f 的值尽可能小。如果这样的 n 值可能多个，选择使 n × 10<sup>e–f</sup> 的值尽可能接近 x 的 n 值。如果有两个这样的 n 值，则选择偶数。
+
+#### 20.1.3.3 Number.prototype.toFixed ( <var>fractionDigits</var> )
+
+注 1
+`tiFixed` 返回一个包含了 -- 代表 this 数字值的留有小数点后 fractionDigits 个数字的十进制固定小数点记法 -- 的字符串。如果 fractionDigits 是 undefined，就认为是 0。
+
+执行以下步骤：
+
+1. 令 x 等于 thisNumberValue(this value)。
+2. 令 f 等于 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(fractionDigits)。（如果 fractionDigits 是 undefined，这步产生的值为 0）。
+3. 如果 f < 0 或 f > 20, 抛出一个 RangeError 异常。不过允许实现去扩展 `toFixed` 的值使 f 小于 0 或者是大于 20。在这种情况下，`toFixed` 不必在此时抛出 RangeError 异常。
+4. 如果 x 是 NaN，返回字符串 `"NaN"`。
+5. 令 s 为空字符串。
+6. 如果 x < 0，则
+    1. 令 s 为 "-"。
+    2. 令 x = –x。
+7. 如果 x ≥ 10<sup>21</sup>，则
+    1. 令 m = [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring)(x)。
+8. 如果 x < 10<sup>21</sup>，
+    1. 令 n 为一个整数，让 n ÷ 10<sup>f</sup> – x 准确的数学值尽可能接近零。如果有两个这样 n 值，选择较大的 n。
+    2. 如果 n = 0，令 m 为字符串 "0"。否则，令 m 等于 n 的十进制表示的字符串（为了没有前导零）。
+    3. 如果 f ≠ 0，则
+        1. 令 k 等于 m 里的字符个数。
+        2. 如果 k ≤ f，则
+            1. 令 z 等于 f+1–k 个码元 0x0030（数字0）组成的字符串。
+            2. 令 m 等于字符串 z 和 m 的拼接。
+            3. 令 k 等于 f + 1。
+        3. 令 a 等于 m 的前 k–f 个字符，令 b 为其余 f 个字符。
+        4. 令 m 等于 a，`"."`，b 三个字符串的拼接。
+9. 返回字符串 s 和 m 的拼接。
+
+
+如果调用 `toFixed` 方法时传递了多于一个参数，这种行为是未定义的（详见规范[17](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-standard-built-in-objects)）
+
+注 2
+对于某些值，toFixed 的输出可比 toString 的更精确，因为 toString 只打印区分相邻数字值的足够的有效数字。例如，
+
+ `(1000000000000000128).toString()` 返回 `"1000000000000000100"`，
+
+ 而 `(1000000000000000128).toFixed(0)` 返回 `"1000000000000000128"`。
+
+#### 20.1.3.4 Number.prototype.toLocaleString ( [ <var>reserved1</var> [, <var>reserved2</var> ] ])
+
+一个包含 ECMA-402 国际化 API 的 ECMAScript 实现必须要按照 ECMA-402 规范中的定义进行实现 `Number.prototype.toLocaleString`，如果这个 ECMAScript 实现没有包含 ECMA-402 API，那么接下来的规范适用于 `toLocaleString`。
+
+根据宿主环境的当前语言环境惯例来格式化当前 Number 值，生成代表这个值的字符串。此函数是依赖于实现的，允许但不鼓励它的返回值与 toString 相同。
+
+这个方法可选参数的意义被定义在 ECMA-402 规范中。实现如果没有包含 ECMA-402 支持，应当不使用此参数做任何用途。
+
+#### 20.1.3.5 Number.prototype.toPrecision ( <var>precision</var> )
+
+返回一个包含当前 Number 值的科学计数法（有效数字的小数点前有一个数字，有效数字的小数点后有 precision-1 个数字）或十进制固定计数法（precision 个有效数字）的字符串。如果 precision 是 undefined，调用 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring) 代替。具体执行以下步骤:
+
+1. 令 x 等于 thisNumberValue(this value)。
+2. 如果 precision 为 undefined，返回 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring)(x)。
+3. 令 p 等于 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(precision)。
+4. 如果 x 为 NaN，返回字符串 `"NaN"`。
+5. 令 s 为空字符串。
+6. 如果 x < 0，则
+    1. 令 s 等于 码元 0x002D（连字符暨减号）
+    2. 令 x 等于 -x。
+7. 如果 x = +∞，则
+    1. 返回 s 和 `"Infinity"` 拼接的字符串。
+8. 如果 p < 1 或者 p > 21，抛出 RangeError 异常。不过允许实现扩展 `toPrecision` 的行为使 p 小于1或是大于21。在这种情况下，`toPrecision` 不必抛出 RangeError 异常。
+9. 如果 x = 0，则
+    1. 令 m 等于 p 个 码元 0x0030（数字 0）拼接的字符串。
+    2. 令 e 等于 0。
+10 如果 x ≠ 0，
+    1. 令 e 和 n 为整数，并且满足 10<sup>p–1</sup> ≤ n < 10<sup>p</sup> 且 n × 10<sup>e–p+1</sup> – x 的值尽可能的接近0。如果有两个这样 e 和 n 的集合，选择 n × 10<sup>e–p+1</sup> 的值更大的那组。
+    2. 令 m 等于 n 的十进制表示的字符串（没有前导零）
+    3. 如果 e < -6 或者 e ≥ p，则
+        1. 断言： e ≠ 0。
+        2. 令 a 等于 m 的第一个字符，令 b 等于剩下的 p - 1 个字符。
+        3. 令 m 等于 a，`"."`，b 三个字符串的拼接。
+        4. 如果 e > 0，则
+            1. 令 c 等于码元 0x002B（加号）。
+        5. 如果 e < 0，
+            1. 令 c 等于码元 0x002D（连字符暨减号）。
+            2. 令 e 等于 -e。
+        6. 令 d 等于 e 的十进制表示的字符串（没有前导零）。
+        7. 返回 s，m，码元0x0065（小写拉丁字母 E），c，d五个字符串的拼接。
+11. 如果 e = p - 1，返回字符串 s 和 m 的拼接。
+12. 如果 e ≥ 0，则
+    1. 令 m 等于 m 的前 e+1 个字符， 码元0x002E（字符 ‘.’）, m 的其余 p– (e+1) 个字符拼接的结果。
+13. 如果 e ＜ 0，
+    1. 令 m 等于码元 0x0030（数字 0），码元0x002E（字符 ‘.’）,-(e + 1)个码元 0x0030（数字 0），字符串 m 的拼接。
+14. 返回字符串 s 和 m 的拼接。
+
+`toPrecision` 方法调用时传递多于一个参数，这种行为是未定义的（详见规范[17](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-standard-built-in-objects)）
+
+#### 20.1.3.6 Number.prototype.toString ( [ <var>radix</var> ] )
+
+注
+可选参数 radix 应当为 2 - 36 之间的一个整数值。如果没有给出 radix 或者其为 undefined，则使用数字 10 作为默认值。
+
+将会执行以下步骤：
+
+1. 令 x 等于 thisNumberValue（this value）。
+2. 如果 radix 不存在，令 radixNumber 等于 10。
+3. 否则如果 radix 为 undefined，令 radixNumber 等于 10。
+4. 否则令 radixNumber 等于 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(radix)。
+5. 如果 radixNumber < 2 或者 radixNumber > 36，抛出 RangeError 异常。
+6. 如果 radixNumber = 10，返回 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring)(x)。
+7. 根据 radixNumber 的值返回当前数值特定进制的字符串表示。字母 'a'-'z' 用来代表 10 到 35。算法的精确度依赖于实现，算法应当是[7.1.12.1](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring-applied-to-the-number-type)中指定的实现。
+
+`toString` 函数是不通用的，如果 this 值不是 Number 或者 Number 对象，他就会抛出 TypeError 异常。因此，它不能作为一个转移到其他对象上的方法。
+
+`toString` 方法的 `length` 属性等于 1。
+
+#### 20.1.3.7Number.prototype.valueOf( )
+
+1. 返回 thisNumberValue（this value）。
+
+### 20.1.4 Number 实例的属性
+
+Number 实例从 Number 原型对象继承属性，Number 实例还有一个 [[NumberData]] 内部属性。[[NumberData]] 存储着当前 Number 对象的 Number 值。
+
+## 20.2 Math 对象
+
+Math 对象是 %Math% 的内部对象以及[全局对象](http://www.ecma-international.org/ecma-262/7.0/index.html#global-object)的 `Math` 属性的初始值。Math 对象是一个独立普通对象。
+
+Math 对象内置 [[Prototype]] 的值是内部对象 [%ObjectPrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-object-prototype-object)。
+
+Math 对象不是一个函数对象。它没有 [[Construct]] 内置函数。在 `new` 操作符后使用 Math 对象作为构造器是不可以的。同时 Math 对象也没有内置的 [[Call]] 方法。没办法作为一个函数调用 Math 对象。
+
+注
+在本规范中，“x 的数值”在 [6.1.6](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-language-types-number-type)中有技术含义。
+
+### 20.2.1 Math 对象的值属性
+
+#### 20.2.1.1 Math.E
+
+自然对数的底数 e 的数值，约为 2.7182818284590452354。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.2.1.2 Math.LN10
+
+10 的自然对数的数字值，约为 2.302585092994046。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.2.1.3 Math.LN2
+
+2 的自然对数的数字值，约为 0.6931471805599453。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.2.1.4 Math.LOG10E
+
+自然对数的底数 e 的以 10 为底数的对数的数字值；约为 0.4342944819032518。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+注
+`Math.LOG10E` 的值约为 `Math.LN10` 值的倒数。
+
+#### 20.2.1.5 Math.LOG2E
+
+自然对数的底数 e 的以 2 为底数的对数的数字值；约为 1.4426950408889634。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+注
+`Math.LOG2E` 的值约为 `Math.LN2` 值的倒数。
+
+#### 20.2.1.6 Math.PI
+
+圆的周长与直径之比π的数字值，约为 3.1415926535897932。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.2.1.7 Math.SQRT1_2
+
+½ 的平方根的数字值，约为 0.7071067811865476。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+注
+`Math.SQRT1_2` 的值约为 `Math.SQRT2` 值的倒数。
+
+#### 20.2.1.8 Math.SQRT2
+
+2 的平方根的数字值，约为 1.4142135623730951。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.2.1.9 Math [ @@toStringTag ]
+
+@@toStringTag 属性的初始值为字符串 `"Math"`。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }。
+
+### 20.2.2 Math 对象的函数属性
+
+对以下 `Math` 对象函数的每个参数（如果有多个，以左到右的顺序）应用 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber) 抽象操作，然后对结果数字值执行计算。如果 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)返回[突然中止](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)，那么[中止记录](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)将被马上返回。否则，函数对结果数值执行计算。每个函数返回的值都是一个 Number。
+
+在下面的函数描述中，符号 NaN，-0，+0，-∞，以及 +∞ 都指的是 [6.1.6](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-language-types-number-type) 中描述的数值。
+
+注
+这里没有精确规定函数 acos，asin，atan，atan2，cos，exp，logpow，sin，sqrt 的行为，除了需要特别说明对边界情况某些参数值的结果之外。对其他参数值，这些函数旨在计算计算常见数学函数的结果，但选择的近似算法中的某些范围是被允许的。这样做的目的是为了实现人员可以在给定的硬件平台上为 ECMAScript 与 C 语言程序员使用相同的数学库。
+
+尽管实现拥有算法的选择权，但是推荐（不是本标准中指定）实现使用 `fdlibm` 中包含的 IEEE 754-2008 算法来作为近似算法，由 Sun Microsystems([http://www.netlib.org/fdlibm](http://www.netlib.org/fdlibm))免费提供。
+
+#### 20.2.2.1 Math.abs ( <var>x</var> )
+
+返回 x 的绝对值，返回结果大小与 x 相同，但是有正数标记。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 -0，返回结果是 +0。
+* 如果 x 是 -∞，返回结果是 +∞。
+
+#### 20.2.2.2 Math.acos ( <var>x</var> )
+
+返回 x 的反余弦的依赖实现的近似值。结果以弧度形式表示，范围是 +0 到 +π。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 大于 1，返回结果是 NaN。
+*   如果 x 小于 −1，返回结果是 NaN。
+*   如果 x 是 1，返回结果是 +0。
+
+#### 20.2.2.3Math.acosh ( <var>x</var> )
+
+返回 x 的反双曲余弦的依赖实现的近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 小于 1，返回结果是 NaN。
+* 如果 x 是 1，返回结果是 +0。
+* 如果 x 是 +∞，返回结果是 +∞。
+
+#### 20.2.2.4 Math.asin ( <var>x</var> )
+
+返回 x 的反正弦的依赖实现的近似值。结果以弧度形式表示，范围是−π/2 到 +π/2。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 大于 1，返回结果是 NaN。
+*   如果 x 小于 –1，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+
+#### 20.2.2.5 Math.asinh ( <var>x</var> )
+
+返回 x 的反双曲正弦的依赖实现近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是 -0，返回结果是 -0。
+* 如果 x 是 +∞，返回结果是 +∞。
+* 如果 x 是 -∞，返回结果是 -∞。
+
+### 20.2.2.6 Math.atan ( <var>x</var> )
+
+返回 x 的反正切的依赖实现的近似值。结果以弧度形式表示，范围是−π/2 到 +π/2。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 一个依赖于实现的近似值 +π/2。
+*   如果 x 是 −∞，返回结果是 一个依赖于实现的近似值 −π/2。
+
+#### 20.2.2.7 Math.atanh ( <var>x</var> )
+
+返回 x 的反双曲正切的依赖实现的近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 小于 -1，返回结果是 NaN。
+* 如果 x 大于 1，返回结果是 NaN。
+* 如果 x 是 -1，返回结果是 -∞。
+* 如果 x 是 +1，返回结果是 +∞。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是 -0，返回结果是 -0。
+
+#### 20.2.2.8 Math.atan2 ( <var>y</var>, <var>x</var> )
+
+返回 -- 参数 y 和 x 的商 y/x-- 的反正切的依赖实现的近似值，y 和 x 的符号用于确定返回值的象限。注：命名为 y 的参数为第一个，命名为 x 的参数为第二个，这是有意，是反正切函数俩参数的惯例。结果以弧度形式表示，范围是−π到 +π。
+
+*   如果 x 和 y 至少一个是 NaN，返回结果是 NaN。
+*   如果 y>0 且 x 是 +0，返回结果是一个依赖于实现的近似值 +π/2。
+*   如果 y>0 且 x 是 −0，返回结果是一个依赖于实现的近似值 +π/2。
+*   如果 y 是 +0 且 x>0，返回结果是 +0。
+*   如果 y 是 +0 且 x 是 +0，返回结果是 +0。
+*   如果 y 是 +0 且 x 是 −0，返回结果是一个依赖于实现的近似值 +π。
+*   如果 y 是 +0 且 x < 0，返回结果是 一个依赖于实现的近似值 +π。
+*   如果 y 是 −0 且 x > 0，返回结果是 −0。
+*   如果 y 是 −0 且 x 是 +0，返回结果是 −0。
+*   如果 y 是 −0 且 x 是 −0，返回结果是一个依赖于实现的近似值 −π。
+*   如果 y 是 −0 且 x < 0，返回结果是一个依赖于实现的近似值 −π。
+*   如果 y < 0 且 x 是 +0，返回结果是一个依赖于实现的近似值 −π/2。
+*   如果 y < 0 且 x 是 −0，返回结果是一个依赖于实现的近似值 −π/2。
+*   如果 y > 0 且 y 是有限的且 x 是 +∞，返回结果是 +0。
+*   如果 y > 0 且 y 是有限的且 x 是 −∞，返回结果是一个依赖于实现的近似值 +π。
+*   如果 y < 0 且 y 是有限的且 x 是 +∞，返回结果是 −0。
+*   如果 y < 0 且 y 是有限的且 x 是 −∞，返回结果是一个依赖于实现的近似值 −π。
+*   如果 y 是 +∞ 且 x 是有限的，返回结果是 返回结果是一个依赖于实现的近似值 +π/2。
+*   如果 y 是 −∞ 且 x 是有限的，返回结果是 返回结果是一个依赖于实现的近似值 −π/2。
+*   如果 y 是 +∞ 且 x 是 +∞，返回结果是一个依赖于实现的近似值 +π/4。
+*   如果 y 是 +∞ 且 x 是 −∞，返回结果是一个依赖于实现的近似值 +3π/4。
+*   如果 y 是 −∞ 且 x 是 +∞，返回结果是一个依赖于实现的近似值 −π/4。
+*   如果 y 是 −∞ 且 x 是 −∞，返回结果是一个依赖于实现的近似值 −3π/4。
+
+
+#### 20.2.2.9 Math.cbrt ( <var>x</var> )
+
+返回 x 的立方根的依赖实现的近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是 -0，返回结果是 -0。
+* 如果 x 是 +∞，返回结果是 +∞。
+* 如果 x 是 -∞，返回结果是 -∞。
+
+#### 20.2.2.10 Math.ceil ( <var>x</var> )
+
+返回不小于 x 的且为数学整数的最小(接近 −∞)数字值。如果 x 已是整数，则返回 x。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +∞。
+*   如果 x 是 −∞，返回结果是 −∞。
+*   如果 x 小于 0 但大于 -1，返回结果是 −0。
+
+注
+Math.ceil(x) 的值与 -Math.floor(-x) 的值相同。
+
+#### 20.2.2.11 Math.clz32 ( <var>x</var> )
+
+当调用 `Math.clz32` 传递了一个参数 x 时，执行以下步骤：
+
+1. 令 n 等于 [ToUint32](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-touint32)(x)。
+2. 令 p 等于 n 的 32 位二进制表示中前导 0 的位数。
+3. 返回 p。
+
+注
+如果 n 等于 0，p 等于 32。如果 n 的 32 位二进制编码的最高位为 1，则 p 等于 0。
+
+#### 20.2.2.12 Math.cos ( <var>x</var> )
+
+返回 x 的余弦的依赖实现的近似值。参数被当做是弧度值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 1。
+*   如果 x 是 −0，返回结果是 1。
+*   如果 x 是 +∞，返回结果是 NaN。
+*   如果 x 是 −∞，返回结果是 NaN。
+
+#### 20.2.2.13 Math.cosh ( <var>x</var> )
+
+返回 x 的双曲余弦的依赖实现的近似值。
+
+* 如果 x 等于 NaN，返回结果是 NaN。
+* 如果 x 等于 +0，返回结果是 1。
+* 如果 x 等于 -0，返回结果是 1。
+* 如果 x 等于 +∞，返回结果是 +∞。
+* 如果 x 等于 -∞，返回结果是 +∞。
+
+注
+cosh(x) 的值等同于 *(exp(x) + exp(-x))/2*。
+
+#### 20.2.2.14 Math.exp ( <var>x</var> )
+
+返回 x 的指数的依赖实现的近似值（返回 e 的 x 次幂，e 代表自然对数的底数）。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 1。
+*   如果 x 是 −0，返回结果是 1。
+*   如果 x 是 +∞，返回结果是 +∞。
+*   如果 x 是 −∞，返回结果是 +0。
+
+#### 20.2.2.15 Math.expm1 ( <var>x</var> )
+
+返回 x 的指数减 1 的依赖实现的近似值（返回 e 的 x 次幂，e 代表自然对数的底数）。即使当 x 的值接近 0 的时候，计算的结果也是准确的。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是 -0，返回结果是 -0。
+* 如果 x 是 +∞，返回结果是 +∞。
+* 如果 x 是 -∞，返回结果是 -1。
+
+#### 20.2.2.16 Math.floor ( <var>x</var> )
+
+返回不大于 x 的且为数学整数的最大(接近 +∞)数值。如果 x 已是整数，则返回 x。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +∞。
+*   如果 x 是 −∞，返回结果是 −∞。
+*   如果 x 大于 0 但小于 1，返回结果是 +0。
+
+注
+Math.floor(x) 的值与 -Math.ceil(-x) 的值相同。
+
+#### 20.2.2.17 Math.fround ( <var>x</var> )
+
+当调用 `Math.fround` 传递了一个参数时，将执行以下步骤：
+
+1. 如果 x 等于 NaN，返回 NaN。
+2. 如果 x 等于 +0，-0，+∞，-∞ 其中之一时，返回 x。
+3. 令 x32 等于用 roundTiesToEven 将 x 转换为 IEEE 754-2008 单精度形式的值。
+4. 令 x64 等于将 x32 转换为 IEEE 754-2008 双精度形式的值。
+5. 返回 ECMAScript 数值相应的 x64。
+
+#### 20.2.2.18 Math.hypot ( <var>value1</var>, <var>value2</var>, ...<var>values</var> )
+
+* 如果没有参数传递，返回结果是 +0。
+* 如果其中某个参数为 +∞，返回结果是 +∞。
+* 如果其中某个参数为 -∞，返回结果是 -∞。
+* 如果没有参数为 +∞ 或 -∞，并且某个参数为 NaN，返回结果是 NaN。
+* 如果所有的参数都是 +0 或者 -0，返回结果是 +0。
+
+注
+实现应当注意避免上溢出和下溢出所带来的精度损失，当函数调用时传递了两个及以上参数时，不成熟的实现很容易出现这种问题。
+
+#### 20.2.2.19 Math.imul ( <var>x</var>, <var>y</var> )
+
+当调用 `Math.imul` 传递了两个参数 x 和 y 时，将执行以下步骤：
+
+1. 令 a 等于 [ToUint32](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-touint32)(x)。
+2. 令 b 等于 [ToUint32](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-touint32)(y)。
+3. 令 product 等于 (a × b) [模](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 2<sup>32</sup>。
+4. 如果 product ≥ 2<sup>31</sup>，返回 product - 2<sup>32</sup>。否则返回 product。
+
+#### 20.2.2.20 Math.log ( <var>x</var> )
+
+返回 x 的自然对数的依赖于实现的近似值 .
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 小于 0，返回结果是 NaN。
+*   如果 x 是 +0 或 −0，返回结果是 −∞。
+*   如果 x 是 1，返回结果是 +0。
+*   如果 x 是 +∞，返回结果是 +∞。
+
+#### 20.2.2.21 Math.log1p ( <var>x</var> )
+
+返回 x + 1 的自然对数的依赖于实现的近似值。即使 x 接近 0，计算出的结果也是准确的。
+
+* 如果 x NaN，返回结果是 NaN。
+* 如果 x 小于 -1，返回结果是 NaN。
+* 如果 x 等于 -1，返回结果是 -∞。
+* 如果 x 等于 +0，返回结果是 +0。
+* 如果 x 等于 -0，返回结果是 -0。
+* 如果 x 等于 +∞，返回结果是 +∞。
+
+#### 20.2.2.22 Math.log10 ( <var>x</var> )
+
+返回 x 以 10 为底的对数的依赖于实现的近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 小于 0，返回结果是 NaN。
+* 如果 x 是 +0，返回结果是 -∞。
+* 如果 x 是 -0，返回结果是 -∞。
+* 如果 x 是 1，返回结果是 +0。
+* 如果 x 是 +∞，返回结果是 +∞。
+
+#### 20.2.2.23 Math.log2 ( <var>x</var> )
+
+返回 x 以 2 为底的对数的依赖于实现的近似值。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 小于 0，返回结果是 NaN。
+* 如果 x 是 +0，返回结果是 -∞。
+* 如果 x 是 -0，返回结果是 -∞。
+* 如果 x 是 1，返回结果是 +0。
+* 如果 x 是 +∞，返回结果是 +∞。
+
+#### 20.2.2.24 Math.max ( <var>value1</var>, <var>value2</var>, ...<var>values</var> )
+
+给定零或多个参数，对每个参数调用 ToNumber 并返回调用结果里的最大值。
+
+*   如果没有给定参数，返回结果是 −∞。
+*   如果某个值是 NaN，返回结果是 NaN。
+*   比较以确定最大值是使用了[抽象关系比较](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-abstract-relational-comparison)算法，除了 +0 被认为大于 -0 这一特殊情况。
+
+#### 20.2.2.25 Math.min ( <var>value1</var>, <var>value2</var>, ...<var>values</var> )
+
+给定零或多个参数，对每个参数调用 ToNumber 并返回调用结果里的最小值。
+
+*   如果没有给定参数，返回结果是 −∞。
+*   如果某个值是 NaN，返回结果是 NaN。
+*   比较以确定最小值是使用了[抽象关系比较](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-abstract-relational-comparison)算法，除了 +0 被认为大于 -0 这一特殊情况。
+
+#### 20.2.2.26 Math.pow ( <var>base</var>, <var>exponent</var> )
+
+1. 返回如规范[12.7.3.4](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-applying-the-exp-operator)中所定义的对 base 和 exponent [应用 ** 操作符](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-applying-the-exp-operator)的结果。
+
+#### 20.2.2.27 Math.random ( )
+
+返回一个大于或等于 0 但小于 1 的符号为正的数字值，选择随机或在该范围内近似均匀分布的伪随机，用一个依赖与实现的算法或策略。此函数不需要参数。
+
+不同领域创建的每个 `Math.random` 函数都必须在连续调用的情况下返回不同的序列。
+
+#### 20.2.2.28 Math.round ( <var>x</var> )
+
+ 返回最接近 x 且为数学整数的数值。如果两个整数同等接近 x，则选择接近 +∞的数值 。如果 x 已是整数，则返回 x。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +∞。
+*   如果 x 是 −∞，返回结果是 −∞。
+*   如果 x 大于 0 但小于 0.5，返回结果是 +0。
+*   如果 x 小于 0 但大于或等于 -0.5，返回结果是 −0。
+
+注 1
+Math.round(3.5) 返回 4，但 Math.round(–3.5) 返回 –3.
+
+注 2
+当 x 为 −0 或 x 小于 0 当大于大于等于 -0.5 时，Math.round(x) 返回 −0, 但 Math.floor(x+0.5) 返回 +0，除了这种情况之外 Math.round(x) 的返回值与 Math.floor(x+0.5) 的返回值相同。
+
+#### 20.2.2.29 Math.sign (<var>x</var>)
+
+返回 x 的标识位，标识 x 是正数，负数，或者 0。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 -0，返回结果是 -0。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是负数并且不为 -0，返回结果是 -1。
+* 如果 x 是正数并且不为 +0，返回结果是 +1。
+
+# 20.2.2.30Math.sin ( <var>x</var> )
+
+返回 x 的正弦的依赖实现的近似值。参数被当做是弧度值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞ 或 −∞，返回结果是 NaN。
+
+#### 20.2.2.31 Math.sinh ( <var>x</var> )
+
+返回 x 的双曲正弦的依赖实现的近似值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +∞。
+*   如果 x 是 -∞，返回结果是 -∞。
+
+注
+sinh(x) 的值与 *(exp(x) - exp(-x))/2* 相同。
+
+#### 20.2.2.32 Math.sqrt ( <var>x</var> )
+
+返回 x 的平方根的依赖实现的近似值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 小于 0，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +∞。
+
+#### 20.2.2.33 Math.tan ( <var>x</var> )
+
+返回 x 的正切的依赖实现的近似值。参数被当做是弧度值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞ 或 −∞，返回结果是 NaN。
+
+#### 20.2.2.34 Math.tanh ( <var>x</var> )
+
+返回 x 的双曲正切的依赖实现的近似值。
+
+*   如果 x 是 NaN，返回结果是 NaN。
+*   如果 x 是 +0，返回结果是 +0。
+*   如果 x 是 −0，返回结果是 −0。
+*   如果 x 是 +∞，返回结果是 +1。
+*   如果 x 是 -∞，返回结果是 -1。
+
+注
+tanh(x)的值与 *(exp(x) - exp(-x))/(exp(x) + exp(-x))*相同。
+
+#### 20.2.2.35 Math.trunc ( <var>x</var> )
+
+返回 x 的整数部分，删除所有小数部分。如果 x 已经是整数，则返回 x。
+
+* 如果 x 是 NaN，返回结果是 NaN。
+* 如果 x 是 -0，返回结果是 -0。
+* 如果 x 是 +0，返回结果是 +0。
+* 如果 x 是 +∞，返回结果是 +∞。
+* 如果 x 是 -∞，返回结果是 -∞。
+* 如果 x 大于 0 小于 1，返回结果是 +0。
+* 如果 x 小于 0 大于 -1，返回结果是 -0。
+
+## 20.3 Date 对象
+
+### 20.3.1O Date 对象的概述和抽象操作的定义
+
+下面的函数是操作时间值的抽象操作（在规范[20.3.1.1](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)中定义）。需要注意的是，在任何情况下，如果以下这些函数某个参数是 NaN，返回结果则为 NaN。
+
+#### 20.3.1.1 时间值和时间范围
+
+一个 Date 对象包含一个表示特定时间瞬间的毫秒的数字值。这样的 Number 叫做时间值 。一个时间值也可以是 NaN，说明这个 Date 对象不表示特定时间瞬间。
+
+ECMAScript 中测量时间以毫秒为单位自 1970 年 1 月 1 日开始的。在时间值中闰秒是被忽略的，假设每天正好有 86,400,000 毫秒。ECMAScript 数字值可表示的所有从–9,007,199,254,740,991 到 9,007,199,254,740,991 的整数；这个范围足以衡量在约 1970 年 1 月 1 日前后约 285,616 年内时间精确到毫秒的任何时刻。
+
+ECMAScript Date 对象支持的实际时间范围是略小一些的：相对 1970 年 1 月 1 日午夜 0 点的精确的 –100,000,000 天到 100,000,000 天。这给出了 1970 年 1 月 1 日前后 8,640,000,000,000,000 毫秒的范围。
+
+精确的协调世界时 1970 年 1 月 1 日午夜 0 点用 +0 表示。
+
+#### 20.3.1.2 天数和天内时间
+
+一个给定[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) t 所属的天数是
+
+[Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t) = [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)(t / [msPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day))
+
+其中每天的毫秒数是
+
+[msPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day) = 86400000
+
+余数叫做天内时间
+
+[TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t) = t [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)[msPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)。
+
+#### 20.3.1.3 年数
+
+ECMAScript 使用一个推算公历系统，来将一个天数映射到一个年数，并确定在那年的月份的日期。在这个系统中，闰年是且仅是（可被 4 整除）且（（不可被 100 整除）或（可被 400 整除））的年份。因此，y 年的天的数目定义为
+
+[DaysInYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(y)
+
+= 365 if (y [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 4) ≠ 0
+
+= 366 if (y [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 4) = 0 and (y [modulo](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 100) ≠ 0
+
+= 365 if (y [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 100) = 0 and (y [modulo](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 400) ≠ 0
+
+= 366 if (y [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 400) = 0
+
+
+所有非闰年有 365 天，其中每月的天的数目是常规的。闰年的二月里有个多出来的一天。 y 年第一天的天数是：
+
+[DayFromYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(y) = 365 × (y-1970) + [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)((y-1969)/4) - [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)((y-1901)/100) + [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)((y-1601)/400)
+
+
+ y 年的起始[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)是：
+
+[TimeFromYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(y) = [msPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day) × [DayFromYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(y)
+
+ 一个[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)决定的年数是：
+
+[YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) = 最大整数 y (距离正无穷最近) 这样 [TimeFromYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(y) ≤ t
+
+若时间值在闰年内，闰年函数返回 1，否则返回 0：
+
+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 0 if [DaysInYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)) = 365
+
+= 1 if [DaysInYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)) = 366
+
+#### 20.3.1.4 月数
+
+月份是由闭区间 0 到 11 内的一个整数确定。一个[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) t 到一个月数的映射 MonthFromTime(t) 的定义为：
+
+[MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)
+
+= 0 if 0 ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 31
+
+= 1 if 31 ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 59+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 2 if 59+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 90+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 3 if 90+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 120+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 4 if 120+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 151+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 5 if 151+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 181+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 6 if 181+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 212+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 7 if 212+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 243+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 8 if 243+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 273+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 9 if 273+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 304+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 10 if 304+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 334+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+= 11 if 334+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) ≤ [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) < 365+[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)
+
+[DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t) = [Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t)-[DayFromYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t))
+
+月数值 0 指一月；1 指二月；2 指三月；3 指四月；4 指五月；5 指六月；6 指七月；7 指八月；8 指九月；9 指十月；10 指十一月；11 指十二月。注：[MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(0) = 0，对应 1970 年 1 月 1 日，星期四。
+
+#### 20.3.1.5 日期数
+
+一个日期数用闭区间 1 到 31 内的一个整数标识。从一个[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) t 到一个日期数的映射 DateFromTime(t) 的定义为：
+
+[DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)+1 if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=0
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-30 if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=1
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-58-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=2
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-89-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=3
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-119-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=4
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-150-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=5
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-180-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=6
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-211-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=7
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-242-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=8
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-272-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=9
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-303-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=10
+
+= [DayWithinYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)-333-[InLeapYear](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t) if [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)=11
+
+#### 20.3.1.6 星期数
+
+特定[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) t 对应的星期数的定义为：
+
+
+[WeekDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-1.  `YYYY-MM-DD`1.  `YYYY-MM-DD`****week-day)(t) = ([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t) + 4) [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) 7
+
+星期数的值 0 指星期日；1 指星期一；2 指星期二；3 指星期三；4 指星期四；5 指星期五；6 指星期六。注：[WeekDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-week-day)(0) = 4, 对应 1970 年 1 月 01 日 星期四。
+
+#### 20.3.1.7 本地时区校准
+
+一个 ECMAScript 的实现预期可以进行确定本地时区校准。本地时区校准是一个毫秒为单位的值 LocalTZA，它加上 UTC 代表本地标准时间。LocalTZA 不体现夏令时。LocalTZA 值不随时间改变，只取决于地理位置。
+
+注
+推荐实现使用 IANA 时区数据库[http://www.iana.org/time-zones/](http://www.iana.org/time-zones/)提供的信息。
+
+#### 20.3.1.8 夏时令校准
+
+实现依赖算法来使用关于时区最佳可得的信息来确定本地的夏时令校准 DaylightSavingTA(t)，以毫秒计。一个 ECMAScript 实现预期应尽最大努力来确定本地的夏时令校准。
+
+注
+推荐实现使用 IANA 时区数据库[http://www.iana.org/time-zones/](http://www.iana.org/time-zones/)提供的信息。
+
+#### 20.3.1.9 LocalTime (<var> t </var>)
+
+带有参数 t 的抽象操作 LocalTime 将 t 从国际协调时间（UTC）转换为本地时间，具体执行以下步骤：
+
+1. 返回 t + [LocalTZA](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-local-time-zone-adjustment) + DaylightSavingTA(t)。
+
+#### 20.3.1.10 UTC (<var> t </var>)
+
+The abstract operation UTC with argument t converts t from local time to UTC is defined by performing the following steps:
+带有参数 t 的抽象操作 UTC 将 t 从本地时间转换为 UTC，具体执行以下步骤：
+
+1. 返回 t - [LocalTZA](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-local-time-zone-adjustment) - DaylightSavingTA(t - [LocalTZA](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-local-time-zone-adjustment))。
+
+注
+[UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))不必恒等于 t。
+
+#### 20.3.1.11 时，分，秒，毫秒
+
+以下函数用于分解时间值：
+
+[HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t) = [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)(t / [msPerHour](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)) [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) [HoursPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+[MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t) = [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)(t / [msPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)) [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) [MinutesPerHour](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+[SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t) = [floor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)(t / [msPerSecond](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)) [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) [SecondsPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+[msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t) = t [%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions) [msPerSecond](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+此时
+
+[HoursPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 24
+
+[MinutesPerHour](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 60
+
+[SecondsPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 60
+
+[msPerSecond](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 1000
+
+[msPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 60000 = [msPerSecond](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) × [SecondsPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+[msPerHour](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) = 3600000 = [msPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds) × [MinutesPerHour](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)
+
+#### 20.3.1.12 MakeTime (<var>hour, min, sec, ms</var>)
+
+MakeTime 抽象操作用它的四个参数算出一个毫秒数，参数必须是 ECMAScript 数值。此抽象操作运行以下：
+
+1.  如果 hour 不是有限的或 min 不是有限的或 sec 不是有限的或 ms 不是有限的，返回 NaN。
+2.  令 h 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(hour)。
+3.  令 m 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(min)。
+4.  令 s 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(sec)。
+5.  令 milli 为 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(ms)。
+6.  令 t 为 h * msPerHour + m * msPerMinute + s * msPerSecond + milli，执行的四则运算根据 IEEE 754 规则（这就像使用 ECMAScript 运算符 * 和 + 一样）。
+7.  返回 t。
+
+#### 20.3.1.13 MakeDay (<var>year, month, date</var>)
+
+MakeDay 抽象操作用它的三个参数算出一个天数，参数必须是 ECMAScript 数值。此抽象操作运行以下：
+
+1.  如果 year 不是有限的或 month 不是有限的或 date 不是有限的，返回 NaN。
+2.  令 y 为 ToInteger(year)。
+3.  令 m 为 ToInteger(month)。
+4.  令 dt 为 ToInteger(date)。
+5.  令 ym 为 y + floor(m /12)。
+6.  令 mn 为 m % 12。
+7.  找一个满足 YearFromTime(t) == ym 且 MonthFromTime(t) == mn 且 DateFromTime(t) == 1 的 t 值 ； 但如果这些条件是不可能的（因为有些参数超出了范围），返回 NaN。
+8.  返回 Day(t) + dt − 1。
+
+#### 20.3.1.14 MakeDate (<var>day, time</var>)
+
+MakeDate 抽象操作用它的两个参数算出一个毫秒数，参数必须是 ECMAScript 数字值。此抽象操作运行以下：
+
+1.  如果 day 不是有限的或 time 不是有限的， 返回 NaN.
+2.  返回 day × [msPerDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day) + time.
+
+#### 20.3.1.15 TimeClip (<var>time</var>)
+
+TimeClip 抽象操作用它的参数算出一个毫秒数，参数必须是 ECMAScript 数字值。此抽象操作运行以下：
+
+1. 如果 time 不是有限的，返回 NaN。
+2. 如果 [abs](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-algorithm-conventions)(time) > 8.64 x 1015，返回 NaN。
+3. 令 clippedTime 等于 [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(time)。
+4. 如果 clippedTime 等于 -0，令 clippedTime 等于 +0。
+5. 返回 clippedTime。
+
+ 第 4 步的重点是说允许实现自行选择时间值的内部表示形式，如 64 位有符号整数或 64 位浮点数。根据不同的实现，这个内部表示可能区分也可能无法区分 −0 和 +0。
+
+#### 20.3.1.16 日期时间字符串格式
+
+ECMAScript 定义了一个基于简化的 ISO 8601 扩展格式的日期时间的字符串互换格式，格式为：`YYYY-MM-DDTHH:mm:ss.sssZ`
+
+其中字段为：
+
+|||
+|:----|:----|
+| `YYYY` | 公历中 0000 年到 9999 年的十进制表示。 |
+| `-` | 在字符串中直接以`"-"` (连字符)出现两次。 |
+| `MM` | 一年中的月份，从 01 （一月） 到 12 （十二月）。 |
+| `DD` | 一月中的日期，从 01 到 31。 |
+| `T` | `"T"` 直接出现在字符串中表示时间元素的起点。 |
+| `HH` | 自午夜开始经过的小时数，从 00 到 24 以两位十进制形式表示。 |
+| `:` | 在字符串中直接以 `":"` (冒号)出现两次。 |
+| `mm` | 自小时开始经过的分钟数，从 00 到 59 以两位十进制形式表示。 |
+| `ss` | 自分钟开始经过的秒数，从 00 到 59 以两位十进制形式表示。 |
+| `.` | `"."` (点) 直接出现在字符串中。 |
+| `sss` | 自秒开始经过的毫秒数，以三位十进制形式表示。 |
+| `Z` | 时区偏移量，由 `"Z"` (指 UTC) 或 `"+"` / `"-"` 和后面跟着的时间表示 `HH:mm` 组成。 |
+
+格式包含了只表示日期的形式：
+
+```
+YYYY
+YYYY-MM
+YYYY-MM-DD
+```
+
+其中也包含了“日期-时间” 的格式，包括上述提到的只有日期的形式然后马上跟着一个时间格式与一个可选的附加时区偏移：
+
+```
+THH:mm
+THH:mm:ss
+THH:mm:ss.sss
+```
+
+所有数字必须是 10 进制的。如果缺少 `MM` 或 `DD` 字段，用 `"01"` 作为它们的值。如果缺少 `mm` 或 `ss` 字段，用 `"00"` 作为它们的值，对于缺少的 `sss` 用 `"000"` 作为它的值。如果时区偏移量缺失，只有日期的形式会被理解为 UTC 事件，日期-时间格式会被理解为本地时间。
+
+个格式字符串里有非法值（越界以及语法错误），意味着这个格式字符串不是有效的本节描述格式的实例。
+
+注 1
+由于每天的开始和结束都在午夜，使用两个记号 00:00 和 24:00 可以区分这样同一日期的两个午夜。这意味着两个记号 1995-02-04T24:00 和 1995-02-05T00:00 精准的指向同一时刻。
+
+注 2
+不存在用来规范像 CET，EST 这样的民间时区缩写的国际标准。有时相同的缩写甚至使用不同的时区。出于这个原因，ISO 8601 和这里的格式指定数字来表示时区。
+
+#### 20.3.1.16.1 延长的年份
+
+ECMAScript 需要有表示 6 位数年份（延长的时间）的能力；UTC 1970 年 1 月 1 日前后分别约 285,616 年。对于表示 0 年之前或 9999 年之后的年份，ISO 8601 允许对年的表示法进行扩展，但只能在发送和接受信息的双方有事先共同约定的情况下才能扩展。在已经简化的 ECMAScript 的格式中这样扩展的年份表示法有 2 个额外的数字和始终存在的前缀符号 + 或 - 。0 年被认为是正的，因此用 + 符号作为前缀。
+
+注
+年份扩展示例：
+
+|||
+|---|---|
+| -283457-03-21T15:00:59.008Z | 283458 B.C. |
+| -000001-01-01T00:00:00Z | 2 B.C. |
+| +000000-01-01T00:00:00Z | 1 B.C. |
+| +000001-01-01T00:00:00Z | 1 A.D. |
+| +001970-01-01T00:00:00Z | 1970 A.D. |
+| +002009-12-15T00:00:00Z | 2009 A.D. |
+| +287396-10-12T08:59:00.992Z | 287396 A.D. |
+
+#### 20.3.2 Date 构造器
+
+Date 构造器是 %Date% 的内部对象以及[全局对象](http://www.ecma-international.org/ecma-262/7.0/index.html#global-object) `Date` 属性的初始值。当其作为一个构造器被调用时，它会创建并初始化一个新的 Date 对象。当 `Date` 作为一个函数而不是构造器被调用的时候，它返回一个代表当前时间的字符串（UTC）。
+
+`Date` 构造器是一个单一功能的函数，其行为是根据它的参数数值及类型进行重载操作。
+
+`Date` 构造器被设计为可继承的，可以将其赋值给继承类。想要继承 `Date` 行为的子类构造函数为了创建和初始化带有内置 [[DateValue]] 的子类实例中必须包含一个 `super` 调用 `Date` 构造函数。
+
+`Date` 构造器函数的 `length` 属性的值为 7。
+
+#### 20.3.2.1 Date (<var> year, month [, date [, hours [, minutes [, seconds [, ms ] ] ] ] ] </var>)
+
+此描述仅适用于当 Date 构造器被调用时至少传递了两个参数的情况。
+
+当 `Date` 函数被调用时，会执行以下步骤：
+
+1. 令 numberOfArgs 等于函数调用时传递的参数数目。
+2. 断言： numberOfArgs ≥ 2。
+3. 如果 NewTarget 不是未定义的，则
+    1. 令 y 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(year)。
+    2. 令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+    3. 如果提供了 date，令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)；否则令 dt 等于 1。
+    4. 如果提供了 hours，令 h 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(hours)；否则令 h 等于 0。
+    5. 如果提供了 minutes，令 min 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(minutes)；否则令 min 等于 0。
+    6. 如果提供了 seconds，令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(seconds)；否则令 s 等于 0。
+    7. 如果提供了 ms，令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)；否则令 milli 等于 0。
+    8. 如果 y 不是 NaN，并且 0 ≤ [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(y) ≤ 99，令 yr 等于 1900+[ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(y)；否则，令 yr 等于 y。
+    9. 令 finalDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)(yr, m, dt), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)(h, min, s, milli))。
+    10. 令 O 等于 [OrdinaryCreateFromConstructor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ordinarycreatefromconstructor)(NewTarget, `"%DatePrototype%"`, « [[DateValue]] »)。
+    11. 设置 O 的内置 [[DateValue]] 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(finalDate))。
+    12.  返回 O。
+4. 否则,
+    1. 令 now 等于 [time value](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) (UTC) 的数值，指定了当前时间。
+    2. 返回 [ToDateString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-todatestring)(now).
+
+#### 20.3.2.2 Date (<var> value </var>)
+
+此描述仅适用于当 Date 构造器被调用时只传递了一个参数的情况。
+
+当 `Date` 函数被调用时，会执行以下步骤：
+
+1. 令 numberOfArgs 等于函数调用时传递的参数数目。
+2. 断言： numberOfArgs = 1。
+3. 如果 NewTarget 不是未定义的，则
+    1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(value) 为 Object 并且 value 内部有 [[DateValue]] 的值，则
+        1. 令 tv 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(value)。
+    2.  否则，
+        1. 令 v 等于 [ToPrimitive](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-toprimitive)(value)。
+        2. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(v) 为字符串，则
+            1. 令 tv 等于按日期解析 v 的结果，解析方式与 `parse` 方法完全相同（[20.3.3.2](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date.parse)）。如果解析结果导致了一个[突然终止](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)，tv 则为[终止记录](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)。
+            2.  [ReturnIfAbrupt](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-returnifabrupt)(tv).
+        3. 否则
+            1. 令 tv 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(v)。
+    3. 令 O 等于 [OrdinaryCreateFromConstructor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ordinarycreatefromconstructor)(NewTarget, `"%DatePrototype%"`, « [[DateValue]] »)。
+    4. 设置 O 内部的 [[DataValue]] 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(tv)。
+    5. 返回 O。
+4. 否则，
+    1. 令 now 为 [time value](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) (UTC) 的一个表示当前时间的 Number。
+    2.  返回 [ToDateString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-todatestring)(now)。
+
+#### 20.3.2.3 Date ( )
+
+此描述仅适用于没有函数传递的 Date 构造器调用。
+
+当 `Date` 函数被调用时，将执行以下步骤：
+
+1. 令 numberOfArgs 等于函数调用时传递的参数数目。
+2. 断言： numberOfArgs = 0。
+3. 如果 NewTarget 不是未定义的，则
+    1. 令 O 等于 [OrdinaryCreateFromConstructor](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ordinarycreatefromconstructor)(NewTarget, `"%DatePrototype%"`, « [[DateValue]] »)。
+    2. 令 O 的内置 [[DateValue]] 等于 [time value](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) (UTC)，表示当前时间。
+    3. 返回 O。
+4. 否则，
+    1. 令 now 为 [time value](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range) (UTC) 的一个表示当前时间的 Number。
+    2.  返回 [ToDateString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-todatestring)(now)。
+
+### 20.3.3 Date 构造器的属性
+
+Date 构造器的内置 [[Prototype]] 的值是函数原型对象 [%FunctionPrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-function-prototype-object)。
+
+Date 构造器有以下属性：
+
+#### 20.3.3.1 Date.now ( )
+
+函数 `now` 返回一个数字值，它表示调用 now 时的 UTC 日期时间的数值。
+#### 20.3.3.2 Date.parse (<var> string </var>)
+
+parse 函数对它的参数应用 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring) 操作。如果 [ToString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tostring) 的结果是一个[突然终止](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)，[终止记录](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-completion-record-specification-type)将被立即返回。
+
+否则，`parse` 将结果字符串解释为一个日期和时间；返回一个数字值，是对应这个日期时间的 UTC [时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)。字符串可解释为本地时间，UTC 时间，或某个其他时区的时间，这取决于字符串里的内容。此函数首先尝试根据日期时间字符串格式（[20.3.1.16](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-time-string-format))里的规则来解析字符串的格式。如果字符串不符合这个格式此函数可回退，用任意实现定义的试探方式或日期格式。无法识别的字符串或日期时间包含非法元素值，将导致 `Date.parse` 返回 NaN。
+
+在所有属性都指向它们的初始值的情况下，如果 x 是一个在特定 ECMAScript 的实现里的毫秒数为零的任意 Date 对象，则在这个实现中以下所有表达式应产生相同数字值：
+
+```
+x.valueOf()
+Date.parse(x.toString())
+Date.parse(x.toUTCString())
+Date.parse(x.toISOString())
+```
+
+然而，表达式
+
+```
+ `Date.parse(x.toLocaleString())`
+```
+
+是不需要产生与前面三个表达参数相同的数字值。通常，在给定的字符串不符合日期时间字符串格式（[20.3.1.16](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-time-string-format)）时，`Date.parse` 的产生值是依赖于实现，并且在同一实现中 `toString` 或 `toUTCString` 方法不能产生不符合日期时间字符串格式的字符串。
+
+#### 20.3.3.3 Date.prototype
+
+Date.prototype 的初始值是内置的 Date 原型对象 [%DatePrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)。
+
+这个属性的特性为 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false }。
+
+#### 20.3.3.4 Date.UTC (<var> year, month [, date [, hours [, minutes [, seconds [, ms ] ] ] ] ] </var>)
+
+当用少于两个的参数调用 `UTC` 函数时，它的行为是依赖于实现的。当用二到七个参数调用 `UTC` 函数，它从 year，month 和 (可选的) date，hours，minutes，seconds，ms 计算出日期时间。采用以下步骤：
+
+1.  令 y 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(year)。
+2.  令 m 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+3.  如果提供了 date，则令 dt 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)； 否则令 dt 为 1。
+4.  如果提供了 hours则令 h 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(hours)； 否则令 h 为 0。
+5.  如果提供了 minutes，则令 min 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(minutes)； 否则令 min 为 0。
+6.  如果提供了 seconds，则令 s 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(seconds)； 否则令 s 为 0。
+7.  如果提供了 ms，则令 milli 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)； 否则令 milli 为 0。
+8.  如果 y 不是 NaN 且 0 ≤ [ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(y) ≤ 99，则令 yr 为 1900+[ToInteger](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tointeger)(y)； 否则令 yr 为 y。
+9.  返回 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)(yr, m, dt), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)(h, min, s, milli)))。
+
+`UTC` 函数的 `length` 属性是 7。
+
+注
+UTC 函数与 Date 构造器的不同点有：它返回一个时间值，而不是创建 Date 对象，还有它将参数解释为 UTC，而不是本地时间。
+
+### 20.3.4 Date 原型对象的属性
+
+Date 原型对象是内部对象 %DatePrototype%。Date 原型对象是本身一个普通对象。没有 Date 实例并且没有 [[DateValue]] 的值。
+
+Date 原型对象的内置 [[Prototype]] 的值为内部对象 [%ObjectPrototype%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-object-prototype-object)。
+
+除非有明确定义，否则，下列定义 Date 原型对象方法均为不通用的而且传递给它们的值必须是一个其 [[DateValue]] 的初始值为[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)的对象。
+The abstract operation thisTimeValue(value) performs the following steps:
+抽象操作 thisTimeValue(value) 执行以下步骤：
+
+1. 如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(value) 是一个对象并且 value 有内置 [[DateValue]]，则
+    1. 返回 value 的内置 [[DateValue]]。
+2. 抛出 TypeError 异常。
+
+在以下对 Date 原型对象的函数属性的描述中，短语“当前 Date 对象”指调用函数时的 this 对象。如果当前值不是一个对象，则抛出一个 TypeError 异常。在规范中的一种方法中短语“当前时间值”指的是通过传递当前函数调用的参数给抽象操作 thisTimeValue 所返回的结果。
+
+#### 20.3.4.1 Date.prototype.constructor
+
+Date.prototype.constructor 的初始值是内置函数 [%Date%](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-constructor)。
+
+#### 20.3.4.2 Date.prototype.getDate ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(LocalTime(t))。
+
+#### 20.3.4.3 Date.prototype.getDay ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [WeekDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-week-day)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(LocalTime(t))。
+
+#### 20.3.4.4 Date.prototype.getFullYear ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.5 Date.prototype.getHours ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.6 Date.prototype.getMilliseconds ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.7 Date.prototype.getMinutes ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.8 Date.prototype.getMonth ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.9 Date.prototype.getSeconds ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)([LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t))。
+
+#### 20.3.4.10 Date.prototype.getTime ( )
+
+执行以下步骤：
+
+1.  返回 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+
+#### 20.3.4.11 Date.prototype.getTimezoneOffset ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 (t - [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t)) / [msPerMinute](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)。
+
+#### 20.3.4.12 Date.prototype.getUTCDate ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)。
+
+#### 20.3.4.13 Date.prototype.getUTCDay ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [WeekDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-week-day)(t)。
+
+#### 20.3.4.14 Date.prototype.getUTCFullYear ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t)。
+
+#### 20.3.4.15 Date.prototype.getUTCHours ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+
+#### 20.3.4.16 Date.prototype.getUTCMilliseconds ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+
+#### 20.3.4.17 Date.prototype.getUTCMinutes ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+
+#### 20.3.4.18 Date.prototype.getUTCMonth ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)。
+
+#### 20.3.4.19 Date.prototype.getUTCSeconds ( )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，返回 NaN。
+3.  返回 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+
+# 20.3.4.20Date.prototype.setDate (<var> date </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2.  令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+3.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t), [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t), dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+4.  令 u 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(newDate))。
+5.  设定当前 Date 对象的内置 [[DateValue]] 的值为 u。
+6.  返回 u。
+
+#### 20.3.4.21 Date.prototype.setFullYear (<var> year [, month [, date ] ] </var>)
+
+执行以下步骤：
+
+1. 令 t 等于[thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2. 如果 t 是 NaN，令 t 等于 +0，否则，令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)(t)。
+3.  令 y 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(year)。
+4.  如果没指定 month，则令 m 等于 [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)； 否则，令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+5.  如果没指定 date，则令 dt 等于 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)； 否则，令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+6.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)(y, m, dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+7.  令 u 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(newDate))。
+8.  设定当前 Date 对象的内置 [[DateValue]] 为 u。
+9.  返回 u。
+
+`setFullYear` 方法的 length 属性是 3。
+
+注
+没指定 month 参数时的行为，与 ms 被指定为调用 `getMonth()` 的结果一样。没指定 date 参数时的行为，与 ms 被指定为调用 `getDate()` 的结果一样。
+
+
+#### 20.3.4.22 Date.prototype.setHours (<var> hour [, min [, sec [, ms ] ] ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2.  令 h 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(hour)。
+3.  如果没指定 min，则令 m 为 [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 m 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber(min)。
+4.  如果没指定 sec，则令 s 为 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 s 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber(sec)。
+5.  如果没指定 ms，则令 milli 为 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 milli 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber(ms)。
+6.  令 date 为 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)(h, m, s, milli))。
+7.  令 u 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(date))。
+8.  设定当前 Date 对象的内置 [[DateValue]] 的值为 u。
+9.  返回 u。
+
+`setHours` 方法的 `length` 属性是 4。
+
+注
+没指定 min 参数时的行为，与 min 被指定为调用 `getMinutes()` 的结果一样。没指定 sec 参数时的行为，与 ms 被指定为调用 `getSeconds() `的结果一样。没指定 ms 参数时的行为，与 ms 被指定为调用 `getMilliseconds()` 的结果一样。
+
+#### 20.3.4.23 Date.prototype.setMilliseconds (<var> ms </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2. 令 ms 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+3. 令 time 等于 [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), ms)。
+4. 令 u 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)([MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), time)))。
+5. 设定当前 Date 对象的内置 [[DateValue]] 的值为 u。
+6. 返回 u。
+
+#### 20.3.4.24 Date.prototype.setMinutes (<var> min [, sec [, ms ] ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2. 令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(min)。
+3.  如果没指定 sec，则令 s 等于 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(sec)。
+4.  如果没指定 ms，则令 milli 等于 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+5.  令 date 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), m, s, milli))。
+6.  令 u 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(date))。
+7.  设定当前 Date 对象的内置 [[DateValue]] 为 u。
+8.  返回 u。
+
+`setMinutes` 方法的 `length` 属性是 3。
+
+注
+没指定 sec 参数时的行为，与 ms 被指定为调用 `getSeconds()` 的结果一样。没指定 ms 参数时的行为，与 ms 被指定为调用 `getMilliseconds()` 的结果一样。
+
+#### 20.3.4.25 Date.prototype.setMonth (<var> month [, date ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2. 令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+3. 如果没指定 date，则令 dt 为 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)； 否则，令 dt 为 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+4. 令 newDate 为 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t), m, dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+5. 令 u 为 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(newDate))。
+6. 设定当前 Date 对象的内置 [[DateValue]] 为 u。
+7. 返回 u。
+
+`setMonth` 方法的 `length` 属性是 2。
+
+注
+没指定 date 参数时的行为，与 ms 被指定为调用 `getDate()` 的结果一样。
+
+#### 20.3.4.26 Date.prototype.setSeconds (<var> sec [, ms ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [LocalTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-localtime)([thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value))。
+2.  令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(sec)。
+3. 如果没指定 ms，令 milli 等于 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)；否则，令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+4.  令 date 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), s, milli))。
+5.  令 u 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([UTC](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-utc-t)(date))。
+6. 设定当前 Date 对象的内置 [[DateValue]] 为 u。
+7. 返回 u。
+
+setSeconds 方法的 length 属性是 2。
+
+注
+没指定 ms 参数时的行为，与 ms 被指定为调用 `getMilliseconds()` 的结果一样。
+
+#### 20.3.4.27 Date.prototype.setTime (<var> time </var>)
+
+执行以下步骤：
+
+1.  执行 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 t 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(time)。
+3.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(t)。
+4.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+5.  返回 v。
+
+#### 20.3.4.28 Date.prototype.setUTCDate (<var> date </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+3.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t), [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t), dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+4.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(newDate)。
+5.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+6.  返回 v。
+
+#### 20.3.4.29 Date.prototype.setUTCFullYear (<var> year [， month [， date ] ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  如果 t 是 NaN，令 t 等于 +0。
+3.  令 y 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(year)。
+4.  如果没指定 month，令 m 等于 [MonthFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-month-number)(t)；否则，令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+5.  如果没指定 date，令 dt 等于 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)；否则，令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+6.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)(y, m, dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+7.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(newDate)。
+8.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+9.  返回 v。
+
+`setUTCFullYear` 方法的 `length` 属性是 3。
+
+注
+没指定 month 参数时的行为，与 ms 被指定为调用 `getUTCMonth()` 的结果一样。没指定 date 参数时的行为，与 ms 被指定为调用 `getUTCDate()` 的结果一样。
+
+#### 20.3.4.30 Date.prototype.setUTCHours (<var> hour [， min [， sec [， ms ] ] ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 h 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(hour).
+3. 如果没指定 min，令 m 等于 [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)；否则，令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(min)。
+4.  如果没指定 sec，令 s 等于 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(sec)。
+5.  如果没指定 ms, 令 milli 等于 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)； 否则，令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+6.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)(h, m, s, milli))。
+7.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(newDate)。
+8.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+9.  返回 v。
+
+`setUTCHours` 方法的 `length` 属性是 4。
+
+注
+没指定 min 参数时的行为，与 min 被指定为调用 getUTCMinutes() 的结果一样。没指定 sec 参数时的行为，与 ms 被指定为调用 `getUTCSeconds()` 的结果一样。没指定 ms 参数时的行为，与 ms 被指定为调用 `getUTCMilliseconds()` 的结果一样。
+
+#### 20.3.4.31 Date.prototype.setUTCMilliseconds (<var> ms </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+3.  令 time 等于 [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), milli)。
+4.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)([MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), time))。
+5.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+6.  返回 v。
+
+#### 20.3.4.32 Date.prototype.setUTCMinutes (<var> min [, sec [, ms ] ] </var>)
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(min).
+3.  如果没指定 sec，令 s 等于 [SecFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+4.  否则，
+    1.  令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(sec)。
+5.  如果没指定 ms，令 milli 等于 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+6.  否则，
+    1.  令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+7.  令 date 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), m, s, milli))。
+8.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(date)。
+9.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+10. 返回 v。
+
+`setUTCMinutes` 方法的 `length` 属性是 3。
+
+注
+没指定 sec 参数时的行为，与 ms 被指定为调用 `getUTCSeconds()` 的结果一样。没指定 ms 参数时的行为，与 ms 被指定为调用 `getUTCMilliseconds()` 的结果一样。
+
+#### 20.3.4.33 Date.prototype.setUTCMonth (<var> month [, date ]</var> )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 m 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(month)。
+3.  如果没指定 date，令 dt 等于 [DateFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-number)(t)。
+4.  否则，
+    1.  令 dt 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(date)。
+5.  令 newDate 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([MakeDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makeday)([YearFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-year-number)(t), m, dt), [TimeWithinDay](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t))。
+6.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(newDate)。
+7.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+8.  返回 v。
+
+
+
+`setUTCMonth` 方法的 `length` 属性是 2。
+
+注
+没指定 date 参数时的行为，与 ms 被指定为调用 `getUTCDate()` 的结果一样。
+
+#### 20.3.4.34 Date.prototype.setUTCSeconds (<var> sec [, ms ]</var> )
+
+执行以下步骤：
+
+1.  令 t 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+2.  令 s 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(sec).
+3.  如果没指定 ms，令 milli 等于 [msFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t)。
+4.  否则，
+    1.  令 milli 等于 [ToNumber](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-tonumber)(ms)。
+5.  令 date 等于 [MakeDate](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-makedate)([Day](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-day-number-and-time-within-day)(t), [MakeTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-maketime)([HourFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), [MinFromTime](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-hours-minutes-second-and-milliseconds)(t), s, milli))。
+6.  令 v 等于 [TimeClip](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-timeclip)(date)。
+7.  设定当前 Date 对象的内置 [[DateValue]] 为 v。
+8.  返回 v。
+
+`setUTCSeconds` 方法的 `length` 属性是 2。
+
+注
+没指定 ms 参数时的行为，与 ms 被指定为调用 `getUTCMilliseconds()` 的结果一样。
+
+#### 20.3.4.35 Date.prototype.toDateString ( )
+
+此函数返回一个字符串值。字符串中内容是依赖于实现的，但目的是用一种方便的，可读的形式表示当前时区时间的“日期”部分。
+
+#### 20.3.4.36 Date.prototype.toISOString ( )
+
+此函数返回一个代表[当前时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)的实例的字符串。字符串的格式是 [20.3.1.16](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-time-string-format) 定义的日期时间字符串格式。字符串中包含所有的字段。时区 UTC 用后缀 Z 标记。如果当前对象的时间值不是有限的数字值，抛出一个 RangeError 异常。
+
+#### 20.3.4.37 Date.prototype.toJSON ( key )
+
+这个函数通过使用 `JSON.stringify` ([24.3.2](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-json.stringify)) 为 Date 对象提供了一个字符串表示。
+
+当用参数 key 调用 toJSON 方法，执行以下步骤：
+
+1.  令 O 等于 [ToObject](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-toobject)(this value)。
+2.  令 tv 等于 [ToPrimitive](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-toprimitive)(O, hint Number)。
+3.  如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(tv) 为 Number 并且 tv 是无限的，返回 null。
+4.  返回 [Invoke](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-invoke)(O, `"toISOString"`)。
+
+注 1
+参数是被忽略的。
+
+注 2
+`toJSON` 函数是特意设计为通用的；它不需要其 this 值必须是一个 Date 对象。因此，这个方法可以转换到其他类型的对象上。但转换到的对象必须有 toISOString 方法。对象可自由使用参数 key 来过滤字符串化的方式。
+
+#### 20.3.4.38 Date.prototype.toLocaleDateString (<var> [ reserved1 [， reserved2 ] ] </var>)
+
+一个包含 ECMA-402 国际化 API 的 ECMAScript 实现必须按照规范 ECMA-402 中所定义的来实现 `Date.prototype.tolocaleDateString`。如果一个 ECMAScript 实现没有包含 ECMA-402 API，接下来的定义则应用于 `toLocaleDateString` 方法中。
+
+这个函数返回一个 String。String 的内容是依赖于实现的，但其目的是根据宿主环境当前的约定，来方便的、可读的表示当前时区 Date 的日期部分。
+
+这个方法可选参数的意义定义在 ECMA-402 APPI规范中；没有包含 ECMA-402 的实现不应使用这些参数做其他用途。
+
+#### 20.3.4.39 Date.prototype.toLocaleString (<var> [ reserved1 [， reserved2 ] ] </var>)
+
+一个包含 ECMA-402 国际化 API 的 ECMAScript 实现必须按照规范 ECMA-402 中所定义的来实现 `Date.prototype.toLocaleString`。如果一个 ECMAScript 实现没有包含 ECMA-402 API，接下来的定义则应用于 `toLocaleString` 方法中。
+
+这个函数返回一个 String。String 的内容是依赖于实现的，但其目的是根据宿主环境当前的约定，来方便的、可读的表示当前时区 Date。
+
+这个方法可选参数的意义定义在 ECMA-402 APPI规范中；没有包含 ECMA-402 的实现不应使用这些参数做其他用途。
+
+#### 20.3.4.40 Date.prototype.toLocaleTimeString (<var> [ reserved1 [， reserved2 ] ]</var> )
+
+一个包含 ECMA-402 国际化 API 的 ECMAScript 实现必须按照规范 ECMA-402 中所定义的来实现 `Date.prototype.toLocaleTimeString`。如果一个 ECMAScript 实现没有包含 ECMA-402 API，接下来的定义则应用于 `toLocaleTimeString` 方法中。
+
+这个函数返回一个 String。String 的内容是依赖于实现的，但其目的是根据宿主环境当前的约定，来方便的、可读的表示当前时区 Date 的时间部分。
+
+这个方法可选参数的意义定义在 ECMA-402 APPI规范中；没有包含 ECMA-402 的实现不应使用这些参数做其他用途。
+
+#### 20.3.4.41 Date.prototype.toString ( )
+
+执行以下步骤：
+
+1.  令 O 等于当前 Date 对象。
+2.  如果 O 没有内置 [[DateValue]]，则
+    1.  令 tv 等于 NaN。
+3.  否则，
+    1.  令 tv 等于 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(O)。
+4.  返回 [ToDateString](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-todatestring)(tv)。
+
+注 1
+对毫秒数为零的任意 Date 值 d，`Date.parse(d.toString())` 和 `d.valueOf()` 的结果相同。参见 [20.3.3.2](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date.parse)。
+
+注 2
+`toString` 函数是特意设计为通用的；它不需要其 this 值必须为一个 Date 对象。因此，这个方法可以转换到其他类型的对象上。
+
+#### 20.3.4.41.1 Runtime Semantics: ToDateString(<var>tv</var>)
+
+执行以下步骤：
+
+1.  断言: [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(tv) 为 Number。
+2.  如果 tv 是 NaN，返回 `"Invalid Date"`。
+3.  返回一个依赖于实现的字符串，根据当前时区以方便的、可读的形式将 tv 表示为日期和时间的组合。
+
+#### 20.3.4.42 Date.prototype.toTimeString ( )
+
+这个函数返回一个 String。String 的内容是依赖于实现的，但其目的是根据宿主环境当前的约定，来方便的、可读的表示当前时区 Date 的时间部分。
+
+#### 20.3.4.43 Date.prototype.toUTCString ( )
+
+这个函数返回一个 String。String 的内容是依赖于实现的，但其目的是根据宿主环境当前的约定，来方便的、可读的表示 UTC 的 [当前时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)。
+
+注
+此函数的目的是为日期时间产生一个比 [20.3.1.16](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-time-string-format) 指定的格式更易读的字符串表示。而不用选择清楚的或易于机器解析的格式。如果一个实现没有一个首选的可读格式，建议使用 [20.3.1.16](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-date-time-string-format) 定义的格式，但用空格而不是“T”分割日期和时间元素。
+
+#### 20.3.4.44Date.prototype.valueOf ( )
+
+执行以下步骤：
+
+1.  返回 [thisTimeValue](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-properties-of-the-date-prototype-object)(this value)。
+
+#### 20.3.4.45Date.prototype [ @@toPrimitive ] ( <var>hint</var> )
+
+这个函数是由 ECMAScript 语言操作符调用来将一个 Date 对象转换为一个原始值。hint 的合法值有 `"default"`，`"number"`，以及 `"string"`。Date 对象是 ECMAScript 中唯一一个将 `"default"` 与 `"string"` 看作等效的内置对象。其余 ECMAScript 内置对象都将 `"default"` 看作与 `"number"` 等效。
+
+当 `@@toPrimitive` 被调用时传递了一个 hint 参数时，执行以下步骤：
+
+1.  令 O 等于当前 value。
+2.  如果 [Type](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-ecmascript-data-types-and-values)(O) 不是 Object，抛出一个 TypeError 异常。
+3.  如果 hint 是字符串 `"string"` 或者是字符串 `"default"`，则
+    1.  令 tryFirst 等于 `"string"`。
+4.  否则如果 hint 是字符串 `"number"`，则
+    1.  令 tryFirst 等于 `"number"`。
+5.  否则，抛出一个 TypeError 异常。
+6.  返回 OrdinaryToPrimitive(O, tryFirst)。
+
+这个函数的 `name` 属性的值为 `"[Symbol.toPrimitive]"`。
+
+这个属性的特性有 { [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }。
+
+### 20.3.5 Date 实例的属性
+
+Date 实例从 Date 原型对象继承属性。Date 实例同样有一个内置 [[DateValue]]。内置 [[DateValue]] 的值设置为当前 Date 对象的[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)。
 
