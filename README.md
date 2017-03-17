@@ -2645,3 +2645,68 @@ setSeconds 方法的 length 属性是 2。
 
 Date 实例从 Date 原型对象继承属性。Date 实例同样有一个内置 [[DateValue]]。内置 [[DateValue]] 的值设置为当前 Date 对象的[时间值](http://www.ecma-international.org/ecma-262/7.0/index.html#sec-time-values-and-time-range)。
 
+### 21 文本处理
+### 21.1 String对象
+### 21.1.1 String构造函数
+
+      字符串构造器是%String%固有对象，全局对象的String属性的初始值。当被当做一个构造器调用时它会创建并初始化一个新的String对象。当String作为一个函数而不是构造器被调用时，它可以进行数据类型的转换。
+      
+      String构造器是可子类化的。这个可以在定义一个类的扩展时使用。打算继承指定的String行为的子类构造函数必须包含对String构造函数的超级调用，以使用[[StringData]]内部插槽创建和初始化子类实例。
+   
+   ### 21.1.1.1 String
+   
+      当String作为参数值被调用，将会执行接下来的步骤：
+      1.如果没有参数传递给这个方法来调用，则木人为""。
+      2.否则,
+         a. 如果NewTarget未定义并且Type是Symbol，则返回SymbolDescriptiveString（value）。
+         b. 让s成为什么？ToString(value)。
+      3.如果NewTarget未定义，则返回s。
+      4.返回？ StringCreate(s, ? GetPrototypeFromConstructor(NewTarget, "%StringPrototype%"))。
+      
+   ### 21.1.1.2 String构造函数的属性
+   
+      String构造函数的[[Prototype]]内部槽的值是内嵌对象％FunctionPrototype％。
+      String构造函数有一下属性：
+   
+### 21.1.2.1 String.fromCharCode
+   ### 21.1.2.2 String.fromCodePoint
+   ### 21.1.2.3 String.prototype
+   ### 21.1.2.4 String.raw ( template, ...substitutions )
+### 21.1.3 字符串原型对象属性
+   ### 21.1.3.1 String.prototype.charAt ( pos )
+   ### 21.1.3.2 String.prototype.charCodeAt ( pos )
+   ### 21.1.3.3 String.prototype.codePointAt ( pos )
+   ### 21.1.3.4 String.prototype.concat ( ...args )
+   ### 21.1.3.5 String.prototype.constructor
+   ### 21.1.3.6 String.prototype.endsWith ( searchString [ , endPosition ] )
+   ### 21.1.3.7 String.prototype.includes ( searchString [ , position ] )
+   ### 21.1.3.8 String.prototype.indexOf ( searchString [ , position ] )
+   ### 21.1.3.9 String.prototype.lastIndexOf ( searchString [ , position ] )
+   ### 21.1.3.10 String.prototype.localeCompare ( that [ , reserved1 [ , reserved2 ] ] )
+   ### 21.1.3.11 String.prototype.match ( regexp )
+   ### 21.1.3.12 String.prototype.normalize ( [ form ] )
+   ### 21.1.3.13 String.prototype.repeat ( count )
+   ### 21.1.3.14 String.prototype.replace (searchValue, replaceValue )
+   ### 21.1.3.14.1 Runtime Semantics: GetSubstitution(matched, str, position, captures, replacement)
+   ### 21.1.3.15 String.prototype.search ( regexp )
+   ### 21.1.3.16 String.prototype.slice ( start, end )
+   ### 21.1.3.17 String.prototype.split ( separator, limit )
+   ### 21.1.3.17.1 Runtime Semantics: SplitMatch ( S, q, R )
+   ### 21.1.3.18 String.prototype.startsWith ( searchString [ , position ] )
+   ### 21.1.3.19 String.prototype.substring ( start, end )
+   ### 21.1.3.20 String.prototype.toLocaleLowerCase ( [ reserved1 [ , reserved2 ] ] )
+   ### 21.1.3.21 String.prototype.toLocaleUpperCase ([ reserved1 [ , reserved2 ] ] )
+   ### 21.1.3.22 String.prototype.toLowerCase ( )
+   ### 21.1.3.23 String.prototype.toString ( )
+   ### 21.1.3.24 String.prototype.toUpperCase ( )
+   ### 21.1.3.25 String.prototype.trim ( )
+   ### 21.1.3.26 String.prototype.valueOf ( )
+   ### 21.1.3.27 String.prototype [ @@iterator ] ( )
+### 21.1.4 字符串实例属性
+   ### 21.1.4.1 长度
+### 21.1.5 字符串迭代对象
+   ### 21.1.5.1 CreateStringIterator 抽象操作
+   ### 21.1.5.2 % StringIteratorPrototype% 对象
+      ### 21.1.5.2.1% StringIteratorPrototype%.next ( )
+      ### 21.1.5.2.2% StringIteratorPrototype% [ @@toStringTag ]
+   ### 21.1.5.3 字符串迭代器实例属性
