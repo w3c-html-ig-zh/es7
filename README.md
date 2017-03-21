@@ -2663,16 +2663,88 @@ Date 实例从 Date 原型对象继承属性。Date 实例同样有一个内置 
       3.如果NewTarget未定义，则返回s。
       4.返回？ StringCreate(s, ? GetPrototypeFromConstructor(NewTarget, "%StringPrototype%"))。
       
-   ### 21.1.1.2 String构造函数的属性
+   ### 21.1.2 String构造函数的属性
    
       String构造函数的[[Prototype]]内部槽的值是内嵌对象％FunctionPrototype％。
       String构造函数有一下属性：
+   ### 21.1.2.1 String.fromCharCode(...codeUnits)
    
-### 21.1.2.1 String.fromCharCode
-   ### 21.1.2.2 String.fromCodePoint
+         String.fromCharCode方法可以以任何数量的参数调用，形成剩余的参数代码单元。接下来将执行：
+         1.让codeUnits成为一个包含传递此函数的参数列表。
+         2.让length成为codeUnits中元素的个数。
+         3.让elements成为一个新的空列表。
+         4.让nextIndex是0。
+         5.重复当 nextIndex < length时
+            a.让next成为codeUnits[nextIndex]。
+            b.让nextCU 成为什么？ToUint16(next)。
+            c.将nextCU添加在元素的末尾。
+            d.让nextIndex成为nextIndex+1。
+         6.按list元素中的顺序，返回string的值，如果length为0，将返回空字符串。
+         fromCharCode方法的length属性为1。
+         
+   ### 21.1.2.2 String.fromCharCode(...codePoints)
+   
+         String.fromCodePoint方法可以以任何数量的参数调用，形成剩余的参数代码点。接下来将执行：
+         1.让codePoints成为一个包含传递次函数的参数列表。
+         2.让length成为codePoints中元素的个数。
+         3.让elements成为一个新的空列表。
+         4.让nextIndex是0。
+         5.重复当 nextIndex < length时
+            a.让next成为codePoints[nextIndex]。
+            b.让nextCP 成为什么？ToNumber(next)。
+            c.如果 SameValue(nextCP, ToInteger(nextCP))是false，跑出一个RangeError的异常。
+            d.如果nextCPU < 0 或者 nextCP > 0x10FFFF，抛出一个RangeError的异常。
+            e.将nextCPU的UTF16编码元素添加到元素组的末尾。
+            f.让nextIndex成为nextIndex+1。
+         6.按list元素中的顺序，返回string的值，如果length为0，将返回空字符串。
+         fromCodePoint方法的length属性为1。
+         
    ### 21.1.2.3 String.prototype
+   
+      String.prototype的初始值是内部对象%StringPrototype%。
+      这个prototype含有一个属性{[[可写]]:false,[[枚举]]:false,[[可配置]]:false}。
+      
    ### 21.1.2.4 String.raw ( template, ...substitutions )
+   
+      String.raw的函数可以使用可变数量的参数来调用。第一个参数是template，其余的变量形成替换列表。接下来将执行：
+         1.让substitutions成为包含所有传入函数的参数的列表，以第二个参数开始。如果传入的参数少于2，List为空。
+         2.让numberOfSubstitutions成为substitutions的元素
+         3.让cooked成为？ ToObject(template)。
+         4.让raw成为？ToObject(? Get(cooked, "raw"))。、
+         5.让literalSegments成为？ToLength(? Get(raw, "length"))。
+         6.如果 literalSegments ≤ 0，返回空字符串。
+         7.让stringElements成为一个新的空List。
+         8.让nextIndex是0。
+         9.重复
+            a.nextKey的值是什么！ToString(nextIndex)。
+            b.nextSeg的值是什么！ ToString(? Get(raw, nextKey))。
+            c.将nextSeg的胆码单元元素按顺序追加到stringElement的末尾。
+            d.如果 nextIndex + 1 = literalSegments,然后
+               i.返回String值，其代码单元按顺序排列在ListstringElements中的元素。如果string Elements没有元素，返回空字符串。
+            e.如果nextIndex < numberOfSubstitutions，让next成为 substitutions[nextIndex]。
+            f.否则，让next成为空字符串。
+            g.让nextSub成为？ToString(next)。
+            h.将nextSub的代码单元元素按顺序追加到stringElements的末尾。
+            i.让nextIndex成为nextIndex+1。
+            
+         提示： String.raw意在用来标记模板的标记函数（12.3.7）。当这样调用时，第一个参数将被很好的形成模板对象，其余的参数将包含替换值。
+         
 ### 21.1.3 字符串原型对象属性
+
+         String.prototype的初始值是内部对象%StringPrototype%。String属性对象是是它自己的字符串对象；它包含一个[[StringData]]内部槽，值为“”。
+         String原型[[Prototype]]内部槽的值是初始对象%ObjectPrototype%。
+         
+         除非另有声明，以下定义的String原型对象方法是不通用的，传递给他们的值必须是String类型的或是具有已初始化为String值的[[StringData]]内部槽对象。
+         
+         抽象处理这个StringValue(value)会有接下来几步：
+         
+            1.如果Type(value)是字符串，返回value。
+            2.如果Type(value)是对象并且value有一个[[StringData]]内部槽，然后
+               a.断言：value的[[StringData]]内部槽是一个String值。
+               b.返回value的[[StringData]]内部槽的值。
+            3.抛出一个TypeError的异常。
+            
+         规范方法中的度阿奴“this String value”指的是通过调用抽象操作thisStringValue返回的结果作为参数到该方法中。
    ### 21.1.3.1 String.prototype.charAt ( pos )
    ### 21.1.3.2 String.prototype.charCodeAt ( pos )
    ### 21.1.3.3 String.prototype.codePointAt ( pos )
